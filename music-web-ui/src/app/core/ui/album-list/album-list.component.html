@@ -1,0 +1,55 @@
+<div *ngIf="displayAsGrid" class="container">
+
+  <mat-card class="album-card" matRipple (click)="albumClicked.emit(-1)">
+    <div class="album-image image-placeholder">
+      <p>A</p>
+    </div>
+    <p class="album-title">All Tracks</p>
+  </mat-card>
+
+  <mat-card *ngFor="let album of albums" class="album-card" matRipple (click)="albumClicked.emit(album.id)">
+    <img *ngIf="album.imageId" class="album-image" [src]="imageUrl + album.imageId">
+
+    <button class="button-add" mat-mini-fab color="primary" (click)="$event.stopPropagation(); addAlbum.emit(album.id)">
+      <mat-icon>add</mat-icon>
+    </button>
+
+    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleAlbum.emit(album.id)">
+      <mat-icon>shuffle</mat-icon>
+    </button>
+
+    <div *ngIf="!album.imageId" class="album-image image-placeholder">
+      <p>{{album.title.substr(0, 1)}}</p>
+    </div>
+    <p class="album-title">{{album.title}}</p>
+  </mat-card>
+
+</div>
+
+<div *ngIf="!displayAsGrid" class="list-container">
+
+  <mat-card class="album-card" matRipple (click)="albumClicked.emit(-1)">
+    <div class="album-image image-placeholder">
+      <p>A</p>
+    </div>
+    <p class="album-title">All Tracks</p>
+  </mat-card>
+
+  <mat-card *ngFor="let album of albums" class="album-card" matRipple (click)="albumClicked.emit(album.id)">
+    <img *ngIf="album.imageId" class="album-image" [src]="imageUrl + album.imageId">
+    <div *ngIf="!album.imageId" class="album-image image-placeholder">
+      <p>{{album.title.substr(0, 1)}}</p>
+    </div>
+    <p class="album-title">{{album.title}}</p>
+
+    <span class="spacer"></span>
+
+    <button class="button-add" mat-mini-fab color="primary" (click)="$event.stopPropagation(); addAlbum.emit(album.id)">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleAlbum.emit(album.id)">
+      <mat-icon>shuffle</mat-icon>
+    </button>
+  </mat-card>
+
+</div>

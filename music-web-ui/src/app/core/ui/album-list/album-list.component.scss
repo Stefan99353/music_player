@@ -1,0 +1,128 @@
+.container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: -0.5rem;
+
+  .album-card {
+    margin: 0.5rem;
+    height: calc(275px - 2rem);
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+      .button-add, .button-shuffle {
+        display: block;
+      }
+    }
+
+    .button-add, .button-shuffle {
+      display: none;
+      position: absolute;
+      bottom: 4rem;
+      right: 1.5rem;
+    }
+
+    .button-shuffle {
+      bottom: 7rem;
+    }
+  }
+
+  .album-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+  }
+
+  .image-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    font-size: 150px;
+    color: grey;
+
+    p {
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  .album-title {
+    position: relative;
+    bottom: -1rem;
+
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+    width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.list-container {
+
+  .album-card {
+    display: flex;
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+      .button-add, .button-shuffle {
+        display: block;
+      }
+    }
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+
+    .button-add, .button-shuffle {
+      display: none;
+    }
+
+    .button-add {
+      margin-right: 1rem;
+    }
+  }
+
+  .album-card + .album-card {
+    margin-top: 0.5rem;
+  }
+
+  .album-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+  }
+
+  .image-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: grey;
+
+    p {
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  .album-title {
+    position: relative;
+    top: 0.7rem;
+    margin-left: 1rem;
+    font-size: large;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}

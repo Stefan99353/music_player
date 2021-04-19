@@ -1,0 +1,6 @@
+<div class="container">
+  <div *ngFor="let element of elements; let i = index" class="element">
+    <span *ngIf="i > 0" class="divider">/</span>
+    <a [href]="element.link" class="link">{{element.name}}</a>
+  </div>
+</div>

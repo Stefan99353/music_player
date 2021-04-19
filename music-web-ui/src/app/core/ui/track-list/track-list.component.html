@@ -1,0 +1,48 @@
+<mat-card>
+
+  <div class="table-container">
+
+    <mat-form-field class="filter">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" #input>
+    </mat-form-field>
+
+    <mat-table #table [dataSource]="filteredAndPagedTracks" class="table" matSort
+               matSortActive="title" matSortDisableClear matSortDirection="asc"
+               (matSortChange)="resetPaging()">
+
+      <!-- Title Column -->
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Title</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.title}}</mat-cell>
+      </ng-container>
+
+      <!-- Artist Column -->
+      <ng-container matColumnDef="artist_name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Artist</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.artistName}}</mat-cell>
+      </ng-container>
+
+      <!-- Album Column -->
+      <ng-container matColumnDef="album_title">
+        <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Album</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.albumTitle}}</mat-cell>
+      </ng-container>
+
+      <!-- Duration Column -->
+      <ng-container matColumnDef="duration">
+        <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Duration</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.duration | duration}}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+      <mat-row class="row" *matRowDef="let row; columns: displayedColumns;" matRipple
+               (click)="clickTrack(row.id)"></mat-row>
+
+    </mat-table>
+
+  </div>
+
+  <mat-paginator class="paginator" [length]="resultsLength" [pageSize]="pageSize"></mat-paginator>
+
+</mat-card>

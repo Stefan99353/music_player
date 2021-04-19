@@ -1,0 +1,19 @@
+<div class="container">
+  <mat-nav-list>
+    <mat-list-item *ngFor="let link of links" (click)="navigate(link.href)">
+      <mat-icon matListIcon>{{link.icon}}</mat-icon>
+      <h3 matLine>{{link.name}}</h3>
+    </mat-list-item>
+  </mat-nav-list>
+
+  <span class="spacer"></span>
+
+  <mat-divider></mat-divider>
+
+  <mat-nav-list>
+    <mat-list-item (click)="updateDb()">
+      <mat-icon matListIcon>sync</mat-icon>
+      <h3 matLine>Update DB</h3>
+    </mat-list-item>
+  </mat-nav-list>
+</div>

@@ -1,0 +1,7 @@
+<div class="album-list">
+  <app-album-list (albumClicked)="albumClicked($event)"
+                  (addAlbum)="addAlbum($event, false)"
+                  (shuffleAlbum)="addAlbum($event, true)"
+                  [displayAsGrid]="grid"
+  ></app-album-list>
+</div>

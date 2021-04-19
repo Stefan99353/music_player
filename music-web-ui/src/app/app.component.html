@@ -1,0 +1,34 @@
+<mat-toolbar class="toolbar">
+  <button mat-icon-button (click)="sidenav.toggle()">
+    <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
+    <mat-icon *ngIf="sidenav.opened">arrow_back</mat-icon>
+  </button>
+
+  <app-breadcrumb class="title"></app-breadcrumb>
+
+  <span class="spacer"></span>
+
+  <div class="gridView">
+    <mat-icon>view_list</mat-icon>
+    <mat-slide-toggle color="primary"
+                      [checked]="grid"
+                      (change)="toggleGrid($event)"
+    ></mat-slide-toggle>
+    <mat-icon>grid_view</mat-icon>
+  </div>
+</mat-toolbar>
+
+<mat-sidenav-container>
+  <mat-sidenav class="sidenav" #sidenav mode="over">
+    <app-sidenav (closeNavBar)="sidenav.close()"></app-sidenav>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+
+    <ng-scrollbar>
+      <router-outlet></router-outlet>
+    </ng-scrollbar>
+
+    <app-player-control></app-player-control>
+  </mat-sidenav-content>
+</mat-sidenav-container>

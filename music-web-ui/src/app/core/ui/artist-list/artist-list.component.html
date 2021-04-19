@@ -1,0 +1,55 @@
+<div *ngIf="displayAsGrid" class="container">
+
+  <mat-card class="artist-card" matRipple (click)="artistClicked.emit(-1)">
+    <div class="artist-image image-placeholder">
+      <p>A</p>
+    </div>
+    <p class="artist-name">All Albums</p>
+  </mat-card>
+
+  <mat-card *ngFor="let artist of artists" class="artist-card" matRipple (click)="artistClicked.emit(artist.id)">
+    <img *ngIf="artist.imageId" class="artist-image" [src]="imageUrl + artist.imageId">
+
+    <button class="button-add" mat-mini-fab color="primary" (click)="$event.stopPropagation(); addArtist.emit(artist.id)">
+      <mat-icon>add</mat-icon>
+    </button>
+
+    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleArtist.emit(artist.id)">
+      <mat-icon>shuffle</mat-icon>
+    </button>
+
+    <div *ngIf="!artist.imageId" class="artist-image image-placeholder">
+      <p>{{artist.name.substr(0, 1)}}</p>
+    </div>
+    <p class="artist-name">{{artist.name}}</p>
+  </mat-card>
+
+</div>
+
+<div *ngIf="!displayAsGrid" class="list-container">
+
+  <mat-card class="artist-card" matRipple (click)="artistClicked.emit(-1)">
+    <div class="artist-image image-placeholder">
+      <p>A</p>
+    </div>
+    <p class="artist-name">All Albums</p>
+  </mat-card>
+
+  <mat-card *ngFor="let artist of artists" class="artist-card" matRipple (click)="artistClicked.emit(artist.id)">
+    <img *ngIf="artist.imageId" class="artist-image" [src]="imageUrl + artist.imageId">
+    <div *ngIf="!artist.imageId" class="artist-image image-placeholder">
+      <p>{{artist.name.substr(0, 1)}}</p>
+    </div>
+    <p class="artist-name">{{artist.name}}</p>
+
+    <span class="spacer"></span>
+
+    <button class="button-add" mat-mini-fab color="primary" (click)="$event.stopPropagation(); addArtist.emit(artist.id)">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleArtist.emit(artist.id)">
+      <mat-icon>shuffle</mat-icon>
+    </button>
+  </mat-card>
+
+</div>

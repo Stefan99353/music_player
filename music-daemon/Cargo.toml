@@ -1,0 +1,32 @@
+[package]
+name = "music-daemon"
+version = "0.1.0"
+authors = ["Stefan Rupertsberger <s.rupertsberger@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rodio = "0.13"
+cpal = "0.13"
+log = "0.4"
+simplelog = "0.9"
+actix = "0.10"
+actix-web = "3.3"
+actix-web-actors = "3.0"
+actix-files = "0.5"
+actix-cors = "0.5"
+r2d2 = "0.8"
+anyhow = "1.0"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+ffprobe = { git = "https://github.com/Stefan99353/ffprobe-rs", branch = "main" }
+config = { version = "0.10", features = ["toml"] }
+diesel = { version = "1.4", features = ["sqlite", "r2d2", "chrono"] }
+diesel_migrations = "1.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+image = "0.23"
+regex = "1.4"
+rand = "0.8.3"
+
+[target.x86_64-pc-windows-gnu.dependencies]
+libsqlite3-sys = { version = "0.20.1", features = ["bundled"] }

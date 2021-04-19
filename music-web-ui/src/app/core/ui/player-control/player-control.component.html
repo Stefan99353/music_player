@@ -1,0 +1,74 @@
+<mat-toolbar class="player-toolbar">
+
+  <img *ngIf="rodioPlayerState.currentTrack && imageId"
+       class="track-image"
+       [src]="imageUrl + imageId"
+  >
+  <div *ngIf="rodioPlayerState.currentTrack && !imageId"
+       class="track-image"
+  >
+    <p>{{rodioPlayerState.currentTrack.title.substr(0, 1)}}</p>
+  </div>
+  <div *ngIf="!rodioPlayerState.currentTrack"
+       class="track-image"
+  ></div>
+
+  <div class="track-info">
+    <p class="title">{{rodioPlayerState?.currentTrack?.title}}</p>
+    <p class="artist">{{rodioPlayerState?.currentTrack?.artistName}}</p>
+  </div>
+
+  <div class="controls">
+    <button mat-icon-button (click)="prev()">
+      <mat-icon>skip_previous</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="resumePause()">
+      <mat-icon *ngIf="rodioPlayerState?.paused">play_circle</mat-icon>
+      <mat-icon *ngIf="!rodioPlayerState?.paused">pause_circle</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="next()">
+      <mat-icon>skip_next</mat-icon>
+    </button>
+  </div>
+
+  <mat-slider class="progress"
+              color="primary"
+              thumbLabel
+              [displayWith]="progressThumbLabel"
+              step="1000"
+              min="0"
+              [max]="rodioPlayerState.currentTrack?.duration"
+              [value]="rodioPlayerState.time"
+              (valueChange)="seek_to($event)"
+  ></mat-slider>
+
+  <div class="volume-container">
+    <mat-icon *ngIf="rodioPlayerState?.volume" class="volume-icon"
+              (click)="toggleVolume()">volume_up
+    </mat-icon>
+    <mat-icon *ngIf="!rodioPlayerState?.volume" class="volume-icon" (click)="toggleVolume()">
+      volume_off
+    </mat-icon>
+
+    <mat-slider class="volume"
+                color="primary"
+                min="0"
+                max="1"
+                step="0.05"
+                [value]="rodioPlayerState?.volume"
+                (valueChange)="setVolume($event)"
+    ></mat-slider>
+
+  </div>
+
+  <button mat-icon-button class="queue-button" (click)="openQueue()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+</mat-toolbar>
+
+<!--<audio #audioPlayer [volume]="0.5">-->
+<!--  <source src="http://localhost:7700/api/v1/tracks/1/stream">-->
+<!--</audio>-->
