@@ -9,24 +9,24 @@ use image::ImageFormat;
 use regex::Regex;
 
 use crate::DbPool;
-use crate::models::albums::NewAlbum;
-use crate::models::artists::NewArtist;
+use crate::models::albums::Album;
+use crate::models::artists::Artist;
 use crate::models::db_updates::NewDbUpdate;
-use crate::models::images::NewImage;
-use crate::models::tracks::NewTrack;
+use crate::models::images::Image;
+use crate::models::tracks::Track;
 
 mod database;
 
 const SUPPORTED_EXTENSIONS: &[&str] = &["mp3", "flac", "ogg", "wav"];
 
 pub struct ArtistPop {
-    pub artist: NewArtist,
+    pub artist: Artist,
     pub albums: Vec<AlbumPop>,
 }
 
 pub struct AlbumPop {
-    pub album: NewAlbum,
-    pub tracks: Vec<NewTrack>,
+    pub album: Album,
+    pub tracks: Vec<Track>,
 }
 
 pub struct Crawler {}
@@ -111,7 +111,8 @@ fn crawl_root(path: &str, artists: &mut Vec<ArtistPop>, conn: &SqliteConnection)
 fn crawl_artist(path: PathBuf, artists: &mut Vec<ArtistPop>, conn: &SqliteConnection) -> anyhow::Result<()> {
     debug!("Search artist folder for albums: '{}'", path.to_string_lossy());
     let mut new_artist = ArtistPop {
-        artist: NewArtist {
+        artist: Artist {
+            id: 0,
             name: path.file_name().unwrap().to_string_lossy().to_string(),
             image_id: None,
             inserted: None,
@@ -135,12 +136,13 @@ fn crawl_artist(path: PathBuf, artists: &mut Vec<ArtistPop>, conn: &SqliteConnec
             if ImageFormat::from_path(&path).is_ok() {
                 debug!("Found image for artist: '{}'", path.to_string_lossy());
                 // Insert Image
-                let new_image = NewImage {
+                let new_image = Image {
+                    id: 0,
                     path: path.to_string_lossy().to_string(),
                     inserted: None,
                     updated: None,
                 };
-                let image_id = match new_image.insert(conn) {
+                let image_id = match new_image.find_or_insert(conn) {
                     Ok(img) => { Some(img.id) }
                     Err(err) => {
                         error!("Error while inserting image for artist: '{}'", &new_artist.artist.name);
@@ -163,7 +165,8 @@ fn crawl_artist(path: PathBuf, artists: &mut Vec<ArtistPop>, conn: &SqliteConnec
 fn crawl_album(path: PathBuf, artist: &mut ArtistPop, conn: &SqliteConnection) -> anyhow::Result<()> {
     debug!("Search album folder for tracks: '{}'", path.to_string_lossy());
     let mut new_album = AlbumPop {
-        album: NewAlbum {
+        album: Album {
+            id: 0,
             title: path.file_name().unwrap().to_string_lossy().to_string(),
             track_count: None,
             disc_count: None,
@@ -189,12 +192,13 @@ fn crawl_album(path: PathBuf, artist: &mut ArtistPop, conn: &SqliteConnection) -
             if ImageFormat::from_path(&path).is_ok() {
                 debug!("Found image for album: '{}'", path.to_string_lossy());
                 // Insert Image
-                let new_image = NewImage {
+                let new_image = Image {
+                    id: 0,
                     path: path.to_string_lossy().to_string(),
                     inserted: None,
                     updated: None,
                 };
-                let image_id = match new_image.insert(conn) {
+                let image_id = match new_image.find_or_insert(conn) {
                     Ok(img) => { Some(img.id) }
                     Err(err) => {
                         error!("Error while inserting image for album: '{}'", &new_album.album.title);
@@ -232,7 +236,8 @@ fn process_file(path: PathBuf, album: &mut AlbumPop) -> anyhow::Result<()> {
 
     let title = process_track_name(&path)?;
 
-    let mut new_track = NewTrack {
+    let mut new_track = Track {
+        id: 0,
         path: path.to_string_lossy().to_string(),
         title,
         date: None,
@@ -275,7 +280,7 @@ fn process_track_name(
     Ok(track_name)
 }
 
-fn track_metadata(track: &mut NewTrack) -> anyhow::Result<()> {
+fn track_metadata(track: &mut Track) -> anyhow::Result<()> {
     debug!("Getting metadata for track '{}'", &track.title);
 
     let ffprobe = ffprobe::ffprobe(&track.path)?;

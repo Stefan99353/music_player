@@ -11,9 +11,10 @@ import {QueueService} from '../../core/io/queue/queue.service';
 export class TracksComponent implements OnInit {
 
   imageUrl = environment.baseUrl + 'images/';
-  //
-  // artistId?: number;
-  // albumId?: number;
+
+  artistId?: number;
+  albumId?: number;
+  playlistId?: number;
 
   constructor(
     private queueService: QueueService,
@@ -22,7 +23,11 @@ export class TracksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.route.params.subscribe(value => {
+      this.artistId = !isNaN(parseInt(value.artistId, 10)) ? parseInt(value.artistId, 10) : undefined;
+      this.albumId = !isNaN(parseInt(value.albumId, 10)) ? parseInt(value.albumId, 10) : undefined;
+      this.playlistId = !isNaN(parseInt(value.playlistId, 10)) ? parseInt(value.playlistId, 10) : undefined;
+    });
   }
 
   addTrack(id: number): void {

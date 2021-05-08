@@ -34,6 +34,13 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {SidenavComponent} from './core/ui/sidenav/sidenav.component';
 import {BreadcrumbComponent} from './core/ui/breadcrumb/breadcrumb.component';
+import {PlaylistsComponent} from './pages/playlists/playlists.component';
+import {PlaylistListComponent} from './core/ui/playlist-list/playlist-list.component';
+import {AddPlaylistDialogComponent} from './core/dialogs/add-playlist-dialog/add-playlist-dialog.component';
+import {FormsModule} from '@angular/forms';
+import {ConfirmDialogComponent} from './core/dialogs/confirm-dialog/confirm-dialog.component';
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatMenuModule} from "@angular/material/menu";
 
 @NgModule({
   declarations: [
@@ -49,6 +56,10 @@ import {BreadcrumbComponent} from './core/ui/breadcrumb/breadcrumb.component';
     AlbumListComponent,
     SidenavComponent,
     BreadcrumbComponent,
+    PlaylistsComponent,
+    PlaylistListComponent,
+    AddPlaylistDialogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -72,7 +83,11 @@ import {BreadcrumbComponent} from './core/ui/breadcrumb/breadcrumb.component';
     MatFormFieldModule,
     MatRippleModule,
     MatSidenavModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatDialogModule,
+    FormsModule,
+    MatSnackBarModule,
+    MatMenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -13,7 +13,7 @@ pub fn insert_into_database(conn: &SqliteConnection, new_artists: Vec<ArtistPop>
     // Artists
     for new_artist in new_artists {
         debug!("Inserting artist '{}'", &new_artist.artist.name);
-        let artist_db_id = match new_artist.artist.insert(conn) {
+        let artist_db_id = match new_artist.artist.find_or_insert(conn) {
             Ok(art) => {
                 art_ids.push(art.id);
                 art.id
@@ -30,7 +30,7 @@ pub fn insert_into_database(conn: &SqliteConnection, new_artists: Vec<ArtistPop>
             debug!("Inserting album '{}'", &new_album.album.title);
             new_album.album.artist_id = artist_db_id;
 
-            let album_db_id = match new_album.album.insert(conn) {
+            let album_db_id = match new_album.album.find_or_insert(conn) {
                 Ok(alb) => {
                     alb_ids.push(alb.id);
                     alb.id

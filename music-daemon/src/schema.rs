@@ -49,6 +49,26 @@ table! {
 }
 
 table! {
+    playlist_track (playlist_id, track_id) {
+        playlist_id -> Integer,
+        track_id -> Integer,
+        inserted -> Nullable<Timestamp>,
+        updated -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    playlists (id) {
+        id -> Integer,
+        name -> Text,
+        icon -> Nullable<Text>,
+        description -> Nullable<Text>,
+        inserted -> Nullable<Timestamp>,
+        updated -> Nullable<Timestamp>,
+    }
+}
+
+table! {
     tracks (id) {
         id -> Integer,
         path -> Text,
@@ -92,16 +112,21 @@ table! {
 joinable!(albums -> artists (artist_id));
 joinable!(albums -> images (image_id));
 joinable!(artists -> images (image_id));
+joinable!(playlist_track -> playlists (playlist_id));
+joinable!(playlist_track -> tracks (track_id));
 joinable!(tracks -> albums (album_id));
 joinable!(tracks -> images (image_id));
 joinable!(populated_tracks -> albums (album_id));
 joinable!(populated_tracks -> artists (artist_id));
+joinable!(playlist_track -> populated_tracks (track_id));
 
 allow_tables_to_appear_in_same_query!(
     albums,
     artists,
     db_updates,
     images,
+    playlist_track,
+    playlists,
     tracks,
     populated_tracks,
 );

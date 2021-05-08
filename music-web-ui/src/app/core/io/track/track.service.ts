@@ -4,6 +4,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Track} from '../../../models/track';
 import {PaginationResult} from '../../../models/pagination-result';
+import {buildParams, RequestFilter} from '../../../models/request-filter';
 
 @Injectable({
   providedIn: 'root'
@@ -14,42 +15,39 @@ export class TrackService {
   constructor(private http: HttpClient) {
   }
 
+  allTracks(filter: RequestFilter): Observable<PaginationResult<Track>> {
+    const params = buildParams(filter);
+
+    return this.http.get<PaginationResult<Track>>(this.baseUrl, {params});
+  }
+
+  addTrack(newTrack: Track): Observable<Track> {
+    return this.http.post<Track>(this.baseUrl, newTrack);
+  }
+
   getTrack(trackId: number): Observable<Track> {
     return this.http.get<Track>(this.baseUrl + '/' + trackId);
   }
 
-  getTracks(
-    artistId?: number,
-    albumId?: number,
-    filter?: string,
-    sort?: string,
-    order?: string,
-    page?: number,
-    limit?: number,
-  ): Observable<PaginationResult<Track>> {
-    let params = new HttpParams();
-    if (artistId !== undefined) {
-      params = params.set('artistId', artistId.toString());
-    }
-    if (albumId !== undefined) {
-      params = params.set('albumId', albumId.toString());
-    }
-    if (filter) {
-      params = params.set('filter', filter);
-    }
-    if (sort) {
-      params = params.set('sort', sort);
-    }
-    if (order) {
-      params = params.set('order', order);
-    }
-    if (page !== undefined) {
-      params = params.set('page', page.toString());
-    }
-    if (limit !== undefined) {
-      params = params.set('limit', limit.toString());
-    }
+  updateTrack(track: Track): Observable<Track> {
+    return this.http.put<Track>(this.baseUrl + '/' + track.id, track);
+  }
 
-    return this.http.get<PaginationResult<Track>>(this.baseUrl, {params});
+  deleteTrack(trackId: number): Observable<Track> {
+    return this.http.delete<Track>(this.baseUrl + '/' + trackId);
+  }
+
+  streamTrack(trackId: number): Observable<any> {
+    return this.http.get<any>(this.baseUrl + '/' + trackId + '/stream');
+  }
+
+  addImage(trackId: number): Observable<any> {
+    // TODO: Implement adding image
+    return this.http.post<any>(this.baseUrl + '/' + trackId + '/image', {});
+  }
+
+  deleteImage(trackId: number): Observable<any> {
+    // TODO: Implement removing image
+    return this.http.delete<any>(this.baseUrl + '/' + trackId + '/image');
   }
 }

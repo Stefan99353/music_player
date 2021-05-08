@@ -1,86 +1,136 @@
 use diesel::prelude::*;
 use diesel::sqlite::Sqlite;
+use diesel::SqliteConnection;
 
-use crate::api::tracks::TrackFilter;
-use crate::models::tracks::PopulatedTrack;
+use crate::api::RequestFilter;
+use crate::models::tracks::{PopulatedTrack, Track};
 use crate::paginate::{LoadPaginated, PaginationResult};
+use crate::models::albums::Album;
 
-pub fn find_track_by_id(
-    track_id: i32,
+pub fn all_tracks(
+    filter: RequestFilter,
     conn: &SqliteConnection,
-) -> Result<Option<PopulatedTrack>, diesel::result::Error> {
-    use crate::schema::populated_tracks::dsl::*;
+) -> diesel::QueryResult<PaginationResult<PopulatedTrack>> {
+    use crate::schema::populated_tracks;
 
-    let res = populated_tracks
-        .filter(id.eq(track_id))
-        .first::<PopulatedTrack>(conn)
-        .optional()?;
-
-    Ok(res)
-}
-
-pub fn get_tracks(
-    filter: TrackFilter,
-    conn: &SqliteConnection,
-) -> Result<PaginationResult<PopulatedTrack>, diesel::result::Error> {
-    use crate::schema::populated_tracks::dsl::*;
-
-    let mut query = populated_tracks.into_boxed::<Sqlite>();
-
-    // Artist ID
-    if let Some(art_id) = filter.artist_id {
-        query = query.filter(artist_id.eq(art_id));
-    }
-
-    // Album ID
-    if let Some(alb_id) = filter.album_id {
-        query = query.filter(album_id.eq(alb_id));
-    }
+    let mut query = populated_tracks::table.into_boxed::<Sqlite>();
 
     // Filter
     if let Some(filter) = filter.filter {
-        let filter = format!("%{}%", filter);
-        query = query.filter(title.like(filter));
+        query = query.filter(populated_tracks::title.like(format!("%{}%", filter)))
     }
 
-    let sort_column = filter.sort.unwrap_or_else(|| { String::from("title") });
-
-    // Order By
-    if filter.order == Some(String::from("desc")) {
-        match sort_column.as_str() {
-            "duration" => {
-                query = query.order((duration.desc(), title.asc()));
-            }
-            "album_title" => {
-                query = query.order((album_title.desc(), title.asc()));
-            }
-            "artist_name" => {
-                query = query.order((artist_name.desc(), title.asc()));
-            }
-            _ => {
-                // Title
-                query = query.order(title.desc());
+    // Order by
+    let sort_column = filter.sort.unwrap_or_else(|| { String::from("title") }).to_ascii_lowercase();
+    let direction = filter.order.unwrap_or_else(|| { String::from("asc") }).to_ascii_lowercase();
+    match direction.as_str() {
+        "desc" => {
+            match sort_column.as_str() {
+                "title" => {
+                    query = query.order((populated_tracks::title.desc(), populated_tracks::id.asc()))
+                }
+                "date" => {
+                    query = query.order((populated_tracks::date.desc(), populated_tracks::id.asc()))
+                }
+                "genre" => {
+                    query = query.order((populated_tracks::genre.desc(), populated_tracks::id.asc()))
+                }
+                "rating" => {
+                    query = query.order((populated_tracks::rating.desc(), populated_tracks::id.asc()))
+                }
+                "duration" => {
+                    query = query.order((populated_tracks::duration.desc(), populated_tracks::id.asc()))
+                }
+                _ => {
+                    query = query.order(populated_tracks::id.asc())
+                }
             }
         }
-    } else {
-        match sort_column.as_str() {
-            "duration" => {
-                query = query.order((duration.asc(), title.asc()));
-            }
-            "album_title" => {
-                query = query.order((album_title.asc(), title.asc()));
-            }
-            "artist_name" => {
-                query = query.order((artist_name.asc(), title.asc()));
-            }
-            _ => {
-                // Title
-                query = query.order(title.asc());
+        _ => {
+            match sort_column.as_str() {
+                "title" => {
+                    query = query.order((populated_tracks::title.asc(), populated_tracks::id.asc()))
+                }
+                "date" => {
+                    query = query.order((populated_tracks::date.asc(), populated_tracks::id.asc()))
+                }
+                "genre" => {
+                    query = query.order((populated_tracks::genre.asc(), populated_tracks::id.asc()))
+                }
+                "rating" => {
+                    query = query.order((populated_tracks::rating.asc(), populated_tracks::id.asc()))
+                }
+                "duration" => {
+                    query = query.order((populated_tracks::duration.asc(), populated_tracks::id.asc()))
+                }
+                _ => {
+                    query = query.order(populated_tracks::id.asc())
+                }
             }
         }
     }
 
-    let res = query.load_with_pagination(&conn, filter.page, filter.limit)?;
+    query.load_with_pagination(&conn, filter.page, filter.limit)
+}
 
-    Ok(res)
+pub fn add_track(
+    _track: Track,
+    _conn: &SqliteConnection,
+) -> diesel::QueryResult<Track> {
+    todo!()
+}
+
+pub fn update_track(
+    _track_id: i32,
+    _track: Track,
+    _conn: &SqliteConnection,
+) -> diesel::QueryResult<Track> {
+    todo!()
+}
+
+pub fn delete_track(
+    _track_id: i32,
+    _conn: &SqliteConnection,
+) -> diesel::QueryResult<()> {
+    todo!()
+}
+
+pub fn get_image_id(
+    track_id: i32,
+    conn: &SqliteConnection,
+) -> diesel::QueryResult<Option<i32>> {
+    let track = match Track::get(track_id, conn)? {
+        None => { return Ok(None); }
+        Some(track) => { track }
+    };
+
+    match track.image_id {
+        None => {
+            match Album::get(track.album_id, conn)? {
+                None => {
+                    Ok(None)
+                }
+                Some(album) => {
+                    Ok(album.image_id)
+                }
+            }
+        }
+        Some(id) => {
+            Ok(Some(id))
+        }
+    }
+}
+
+pub fn add_image(
+    _artist_id: i32,
+    _conn: &SqliteConnection,
+) -> diesel::QueryResult<Track> {
+    todo!()
+}
+
+pub fn delete_image(
+    _artist_id: i32,
+    _conn: &SqliteConnection,
+) -> diesel::QueryResult<()> {
+    todo!()
 }

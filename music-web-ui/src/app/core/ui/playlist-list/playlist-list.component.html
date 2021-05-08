@@ -1,0 +1,22 @@
+<mat-card *ngFor="let playlist of playlists"
+          class="playlist-card"
+          matRipple
+          (click)="playlistClicked.emit(playlist.id)">
+  <mat-icon>{{playlist.icon}}</mat-icon>
+
+  <p class="playlist-name">{{playlist.name}}</p>
+
+  <span class="spacer"></span>
+
+  <button mat-icon-button
+          (click)="$event.stopPropagation(); editClicked.emit(playlist)"
+  >
+    <mat-icon>edit</mat-icon>
+  </button>
+
+  <button mat-icon-button
+          (click)="$event.stopPropagation(); deleteClicked.emit(playlist.id)"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+</mat-card>

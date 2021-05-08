@@ -1,0 +1,11 @@
+<div class="playlist-list">
+  <app-playlist-list (playlistClicked)="playlistClicked($event)"
+                     (deleteClicked)="openConfirmDeleteDialog($event)"
+                     (editClicked)="openEditDialog($event)"
+                     [playlists]="playlists"
+  ></app-playlist-list>
+</div>
+
+<button mat-fab color="primary" class="add-button" (click)="openNewDialog()">
+  <mat-icon>add</mat-icon>
+</button>

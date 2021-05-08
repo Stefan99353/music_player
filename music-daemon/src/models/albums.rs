@@ -1,7 +1,7 @@
 use chrono::{NaiveDateTime, Utc};
 use diesel::{Insertable, Queryable, SqliteConnection};
-use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::schema::albums;
 
@@ -20,6 +20,62 @@ pub struct Album {
     pub updated: Option<NaiveDateTime>,
 }
 
+impl Album {
+    pub fn get(album_id: i32, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+        use crate::schema::albums::dsl::*;
+
+        albums
+            .filter(id.eq(album_id))
+            .first::<Self>(conn)
+            .optional()
+    }
+
+    pub fn find(album_title: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+        use crate::schema::albums::dsl::*;
+
+        albums
+            .filter(title.eq(album_title))
+            .first::<Self>(conn)
+            .optional()
+    }
+
+    pub fn insert(self, conn: &SqliteConnection) -> diesel::QueryResult<Self> {
+        use crate::schema::albums::dsl::*;
+
+        let now = Utc::now().naive_utc();
+
+        let album = NewAlbum {
+            title: self.title,
+            track_count: self.track_count,
+            disc_count: self.disc_count,
+            year: self.year,
+            rating: self.rating,
+            image_id: self.image_id,
+            artist_id: self.artist_id,
+            inserted: Some(now),
+            updated: Some(now)
+        };
+
+        diesel::insert_into(albums)
+            .values(album)
+            .execute(conn)?;
+
+        albums
+            .filter(inserted.eq(now))
+            .first::<Self>(conn)
+    }
+
+    pub fn find_or_insert(self, conn: &SqliteConnection) -> diesel::QueryResult<Self> {
+        let album = Self::find(&self.title, conn)?;
+
+        if let Some(album) = album {
+            return Ok(album);
+        }
+
+        self.insert(conn)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
 #[serde(rename_all = "camelCase")]
 #[table_name = "albums"]
@@ -33,34 +89,4 @@ pub struct NewAlbum {
     pub artist_id: i32,
     pub inserted: Option<NaiveDateTime>,
     pub updated: Option<NaiveDateTime>,
-}
-
-impl NewAlbum {
-    pub fn insert(mut self, conn: &SqliteConnection) -> anyhow::Result<Album> {
-        use crate::schema::albums::dsl::*;
-
-        let album: Option<Album> = albums
-            .filter(title.eq(&self.title))
-            .filter(artist_id.eq(&self.artist_id))
-            .first::<Album>(conn)
-            .optional()?;
-
-        if let Some(album) = album {
-            return Ok(album);
-        }
-
-        let now = Utc::now().naive_utc();
-        self.inserted = Some(now);
-        self.updated = Some(now);
-
-        diesel::insert_into(albums)
-            .values(self)
-            .execute(conn)?;
-
-        let album = albums
-            .filter(inserted.eq(now))
-            .first::<Album>(conn)?;
-
-        Ok(album)
-    }
 }

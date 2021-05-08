@@ -89,77 +89,20 @@ async fn main() -> std::io::Result<()> {
             .data(server_settings.clone())
             .app_data(ws_hub.clone());
 
-        app = app.service(
-            web::scope("/api/v1/")
-                // Websocket
-                .service(ws::start_connection::start_connection)
-                // Management
-                .service(
-                    web::scope("management")
-                        .service(api::management::update_db)
-                        .service(api::management::rebuild_db)
-                        .service(api::management::get_updates),
-                )
-                // Artists
-                .service(
-                    web::scope("artists")
-                        .service(api::artists::get_artist)
-                        .service(api::artists::all_artists)
-                        .service(api::artists::update_artist)
-                        .service(api::artists::delete_artist)
-                        .service(api::artists::add_artist),
-                )
-                // Albums
-                .service(
-                    web::scope("albums")
-                        .service(api::albums::get_album)
-                        .service(api::albums::all_albums)
-                        .service(api::albums::update_album)
-                        .service(api::albums::delete_album)
-                        .service(api::albums::add_album),
-                )
-                // Tracks
-                .service(
-                    web::scope("tracks")
-                        .service(api::tracks::get_track)
-                        .service(api::tracks::all_tracks)
-                        .service(api::tracks::update_track)
-                        .service(api::tracks::delete_track)
-                        .service(api::tracks::add_track)
-                        .service(api::tracks::stream_track),
-                )
-                // Player
-                .service(
-                    web::scope("player")
-                        .service(api::player::state)
-                        .service(api::player::resume)
-                        .service(api::player::pause)
-                        .service(api::player::stop)
-                        .service(api::player::next)
-                        .service(api::player::prev)
-                        .service(api::player::set_volume)
-                        .service(api::player::get_volume),
-                )
-                // Queue
-                .service(
-                    web::scope("queue")
-                        .service(api::queue::get_queue)
-                        .service(api::queue::clear_queue)
-                        .service(api::queue::add_to_queue)
-                        .service(api::queue::add_album_to_queue)
-                        .service(api::queue::add_artist_to_queue)
-                        .service(api::queue::length),
-                )
-                // Images
-                .service(
-                    web::scope("images")
-                        .service(api::images::get_image)
-                        .service(api::images::get_album_image)
-                        .service(api::images::get_album_image_id)
-                        .service(api::images::get_artist_image)
-                        .service(api::images::get_artist_image_id),
-                ),
-        )
+        let mut api_scope = web::scope("/api/v1/");
+
+        api_scope = ws::start_connection::register(api_scope);
+        api_scope = api::artists::register(api_scope);
+        api_scope = api::albums::register(api_scope);
+        api_scope = api::tracks::register(api_scope);
+        api_scope = api::playlists::register(api_scope);
+        api_scope = api::player::register(api_scope);
+        api_scope = api::queue::register(api_scope);
+        api_scope = api::management::register(api_scope);
+        api_scope = api::images::register(api_scope);
+
+
+        app = app.service(api_scope)
             // UI
             .service(actix_files::Files::new("/static", "static"))
             .default_service(

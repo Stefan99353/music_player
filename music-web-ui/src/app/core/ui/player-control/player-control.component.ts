@@ -4,7 +4,6 @@ import {environment} from '../../../../environments/environment';
 import {MatDialog} from '@angular/material/dialog';
 import {QueueComponent} from '../../dialogs/queue/queue.component';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import {ImageService} from '../../io/image/image.service';
 
 
 @Component({
@@ -18,15 +17,20 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
   wsSubject?: WebSocketSubject<any>;
   progressLoop?: number;
 
-  rodioPlayerState: RodioPlayerState = new RodioPlayerState(undefined, 0, false, false, 0.5, 0);
+  rodioPlayerState: RodioPlayerState = {
+    currentIndex: 0,
+    currentlyPlaying: false,
+    paused: false,
+    volume: 0.5,
+    time: 0,
+  };
+
   imageId?: number;
   private previousVolume?: number;
 
   @ViewChild('audioPlayer') audioPlayer!: HTMLAudioElement;
 
-  constructor(
-    public dialog: MatDialog,
-    private imageService: ImageService) {
+  constructor(public dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -48,12 +52,6 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
       // Check image
       if (this.rodioPlayerState.currentTrack) {
         this.imageId = this.rodioPlayerState.currentTrack.imageId;
-
-        if (this.imageId === null || this.imageId === undefined) {
-          this.imageService.get_album_image_id(this.rodioPlayerState.currentTrack.albumId).subscribe(imgId => {
-            this.imageId = imgId !== null ? imgId : undefined;
-          });
-        }
       }
     });
   }

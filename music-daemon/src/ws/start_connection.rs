@@ -1,9 +1,13 @@
 use actix::Addr;
-use actix_web::{Error, get, HttpRequest, HttpResponse, web::Data, web::Payload};
+use actix_web::{Error, get, HttpRequest, HttpResponse, web::Data, web::Payload, Scope};
 use actix_web_actors::ws;
 
 use crate::ws::ClientControllerWs;
 use crate::ws::hub::WsHub;
+
+pub fn register(scope: Scope) -> Scope {
+    scope.service(start_connection)
+}
 
 #[get("/ws")]
 pub async fn start_connection(

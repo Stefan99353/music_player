@@ -1,4 +1,7 @@
 <div class="track-list">
   <app-track-list (trackClicked)="addTrack($event)"
+                  [artistId]="artistId"
+                  [albumId]="albumId"
+                  [playlistId]="playlistId"
   ></app-track-list>
 </div>

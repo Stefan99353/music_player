@@ -9,6 +9,10 @@
     height: calc(275px - 2rem);
     cursor: pointer;
 
+    @media only screen and (max-width: 650px) {
+      height: calc(225px - 2rem);
+    }
+
     &:hover {
       box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
@@ -34,6 +38,11 @@
     height: 200px;
     object-fit: cover;
     border-radius: 0.25rem;
+
+    @media only screen and (max-width: 650px) {
+      width: 150px;
+      height: 150px;
+    }
   }
 
   .image-placeholder {
@@ -43,6 +52,10 @@
     font-weight: bolder;
     font-size: 150px;
     color: grey;
+
+    @media only screen and (max-width: 650px) {
+      font-size: 100px;
+    }
 
     p {
       padding: 0;
@@ -61,6 +74,11 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+
+    @media only screen and (max-width: 650px) {
+      font-size: medium;
+      width: 150px;
+    }
   }
 }
 

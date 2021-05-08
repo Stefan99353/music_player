@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {StorageField, StorageService} from '../../core/io/storage/storage.service';
-import {QueueService} from "../../core/io/queue/queue.service";
+import {QueueService} from '../../core/io/queue/queue.service';
 
 @Component({
   selector: 'app-artists',

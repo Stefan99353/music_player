@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageField, StorageService} from '../../core/io/storage/storage.service';
-import {QueueService} from "../../core/io/queue/queue.service";
+import {QueueService} from '../../core/io/queue/queue.service';
 
 @Component({
   selector: 'app-albums',
@@ -35,11 +35,7 @@ export class AlbumsComponent implements OnInit {
 
   albumClicked(albumId: number): void {
     if (albumId >= 0) {
-      if (this.artistId && this.artistId >= 0) {
-        this.router.navigate(['artists', this.artistId, 'albums', albumId, 'tracks']);
-      } else {
-        this.router.navigate(['albums', albumId, 'tracks']);
-      }
+      this.router.navigate(['albums', albumId, 'tracks']);
     } else {
       if (this.artistId && this.artistId >= 0) {
         this.router.navigate(['artists', this.artistId, 'tracks']);

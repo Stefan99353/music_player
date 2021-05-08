@@ -6,6 +6,15 @@
     </mat-list-item>
   </mat-nav-list>
 
+  <mat-divider></mat-divider>
+
+  <mat-nav-list>
+    <mat-list-item *ngFor="let playlist of playlists" (click)="navigatePlaylist(playlist.id)">
+      <mat-icon matListIcon>{{playlist.icon}}</mat-icon>
+      <h3 matLine>{{playlist.name}}</h3>
+    </mat-list-item>
+  </mat-nav-list>
+
   <span class="spacer"></span>
 
   <mat-divider></mat-divider>

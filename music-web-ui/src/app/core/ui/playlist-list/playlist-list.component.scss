@@ -1,0 +1,28 @@
+.playlist-card {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  align-items: center;
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+}
+
+.playlist-card + .playlist-card {
+  margin-top: 0.5rem;
+}
+
+.playlist-name {
+  margin: 0 0 0 1rem;
+  font-size: large;
+  font-weight: bold;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+button + button {
+  margin: 0 0 0 1rem;
+}

@@ -21,7 +21,7 @@ export class ArtistListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.artistService.get_artists().subscribe(value => {
+    this.artistService.allArtists({}).subscribe(value => {
       this.artists = value.items;
     });
   }

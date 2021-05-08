@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>New Playlist</h1>
+<div mat-dialog-content class="content">
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="name">
+    </mat-form-field>
+
+    <div class="icon">
+      <mat-form-field>
+        <mat-label>Icon</mat-label>
+        <input matInput [(ngModel)]="icon">
+      </mat-form-field>
+
+      <mat-icon>{{icon}}</mat-icon>
+    </div>
+
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="3" [(ngModel)]="description"></textarea>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions class="options">
+  <button mat-raised-button (click)="dialogRef.close()">Cancel</button>
+  <!-- TODO -->
+  <button mat-raised-button *ngIf="new" (click)="addPlaylist()" color="primary">Add</button>
+  <button mat-raised-button *ngIf="!new" (click)="updatePlaylist()" color="primary">Update</button>
+</div>

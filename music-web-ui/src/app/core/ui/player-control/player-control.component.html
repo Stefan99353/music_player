@@ -1,21 +1,23 @@
 <mat-toolbar class="player-toolbar">
 
-  <img *ngIf="rodioPlayerState.currentTrack && imageId"
-       class="track-image"
-       [src]="imageUrl + imageId"
-  >
-  <div *ngIf="rodioPlayerState.currentTrack && !imageId"
-       class="track-image"
-  >
-    <p>{{rodioPlayerState.currentTrack.title.substr(0, 1)}}</p>
-  </div>
-  <div *ngIf="!rodioPlayerState.currentTrack"
-       class="track-image"
-  ></div>
-
   <div class="track-info">
-    <p class="title">{{rodioPlayerState?.currentTrack?.title}}</p>
-    <p class="artist">{{rodioPlayerState?.currentTrack?.artistName}}</p>
+    <img *ngIf="rodioPlayerState.currentTrack && imageId"
+         class="track-image"
+         [src]="imageUrl + imageId"
+    >
+    <div *ngIf="rodioPlayerState.currentTrack && !imageId"
+         class="track-image"
+    >
+      <p>{{rodioPlayerState.currentTrack.title.substr(0, 1)}}</p>
+    </div>
+    <div *ngIf="!rodioPlayerState.currentTrack"
+         class="track-image"
+    ></div>
+
+    <div class="track-desc">
+      <p class="title">{{rodioPlayerState?.currentTrack?.title}}</p>
+      <p class="artist">{{rodioPlayerState?.currentTrack?.artistName}}</p>
+    </div>
   </div>
 
   <div class="controls">
@@ -44,28 +46,30 @@
               (valueChange)="seek_to($event)"
   ></mat-slider>
 
-  <div class="volume-container">
-    <mat-icon *ngIf="rodioPlayerState?.volume" class="volume-icon"
-              (click)="toggleVolume()">volume_up
-    </mat-icon>
-    <mat-icon *ngIf="!rodioPlayerState?.volume" class="volume-icon" (click)="toggleVolume()">
-      volume_off
-    </mat-icon>
+  <div class="misc">
+    <div class="volume-container">
+      <mat-icon *ngIf="rodioPlayerState?.volume" class="volume-icon"
+                (click)="toggleVolume()">volume_up
+      </mat-icon>
+      <mat-icon *ngIf="!rodioPlayerState?.volume" class="volume-icon" (click)="toggleVolume()">
+        volume_off
+      </mat-icon>
 
-    <mat-slider class="volume"
-                color="primary"
-                min="0"
-                max="1"
-                step="0.05"
-                [value]="rodioPlayerState?.volume"
-                (valueChange)="setVolume($event)"
-    ></mat-slider>
+      <mat-slider class="volume"
+                  color="primary"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  [value]="rodioPlayerState?.volume"
+                  (valueChange)="setVolume($event)"
+      ></mat-slider>
 
+    </div>
+
+    <button mat-icon-button class="queue-button" (click)="openQueue()">
+      <mat-icon>queue_music</mat-icon>
+    </button>
   </div>
-
-  <button mat-icon-button class="queue-button" (click)="openQueue()">
-    <mat-icon>menu</mat-icon>
-  </button>
 
 </mat-toolbar>
 

@@ -94,9 +94,15 @@ impl RodioPlayer {
     }
 
     pub fn clear_queue(&mut self) {
-        while self.queue.len() > self.current_index + 1 {
-            self.queue.pop_back();
-        }
+        self.queue = VecDeque::new();
+        self.current_index = 0;
+        self.next_index = 0;
+        self.seek_to = None;
+
+        // Clear next tracks
+        // while self.queue.len() > self.current_index + 1 {
+        //     self.queue.pop_back();
+        // }
     }
 
     pub fn resume(&mut self) {

@@ -3,6 +3,7 @@ import {environment} from '../../../../environments/environment';
 import {Album} from '../../../models/album';
 import {AlbumService} from '../../io/album/album.service';
 import {ActivatedRoute} from '@angular/router';
+import {ArtistService} from '../../io/artist/artist.service';
 
 @Component({
   selector: 'app-album-list',
@@ -21,7 +22,8 @@ export class AlbumListComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private albumService: AlbumService
+    private albumService: AlbumService,
+    private artistService: ArtistService,
   ) {
   }
 
@@ -29,12 +31,12 @@ export class AlbumListComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.artistId = params.artistId;
 
-      if (this.artistId && this.artistId >= 0) {
-        this.albumService.get_albums(this.artistId).subscribe(value => {
+      if (this.artistId !== undefined) {
+        this.artistService.allAlbums(this.artistId, {}).subscribe(value => {
           this.albums = value.items;
         });
       } else {
-        this.albumService.get_albums().subscribe(value => {
+        this.albumService.allAlbums({}).subscribe(value => {
           this.albums = value.items;
         });
       }

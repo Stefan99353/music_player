@@ -36,8 +36,12 @@
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-      <mat-row class="row" *matRowDef="let row; columns: displayedColumns;" matRipple
-               (click)="clickTrack(row.id)"></mat-row>
+      <mat-row class="row"
+               *matRowDef="let row; columns: displayedColumns;"
+               matRipple
+               (click)="clickTrack(row.id)"
+               (contextmenu)="onContextMenu($event, row)"
+      ></mat-row>
 
     </mat-table>
 
@@ -46,3 +50,49 @@
   <mat-paginator class="paginator" [length]="resultsLength" [pageSize]="pageSize"></mat-paginator>
 
 </mat-card>
+
+<div style="visibility: hidden; position: fixed"
+     [style.left]="contextMenuPosition.x"
+     [style.top]="contextMenuPosition.y"
+     [matMenuTriggerFor]="contextMenu">
+</div>
+
+<mat-menu #contextMenu="matMenu">
+  <ng-template matMenuContent let-track="track">
+
+    <button mat-menu-item (click)="clickTrack(track.id)">
+      <mat-icon>add</mat-icon>
+      <span>Add To Queue</span>
+    </button>
+
+    <button mat-menu-item
+            [matMenuTriggerFor]="playlists"
+            [matMenuTriggerData]="{track: track}"
+    >
+      <mat-icon>queue_music</mat-icon>
+      <span>Add To Playlist</span>
+    </button>
+
+    <button mat-menu-item
+            *ngIf="playlistId !== undefined"
+            (click)="removeFromPlaylist(track.id)"
+    >
+      <mat-icon>delete</mat-icon>
+      <span>Remove From Playlist</span>
+    </button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #playlists="matMenu">
+  <ng-template matMenuContent let-track="track">
+    <ng-container *ngIf="playlists$ | async as playlists">
+      <button mat-menu-item
+              *ngFor="let playlist of playlists.items"
+              (click)="addTrackPlaylist(track.id, playlist.id)"
+      >
+        <mat-icon>{{playlist.icon}}</mat-icon>
+        <span>{{playlist.name}}</span>
+      </button>
+    </ng-container>
+  </ng-template>
+</mat-menu>

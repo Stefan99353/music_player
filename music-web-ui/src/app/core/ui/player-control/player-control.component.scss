@@ -1,71 +1,89 @@
 .player-toolbar {
   height: 96px;
 
-  .track-image {
-    height: calc(96px - 2rem);
-    width: calc(96px - 2rem);
-
-    object-fit: cover;
-
-    background-color: #303030;
-    border-radius: 2px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 1rem;
-    font-weight: bold;
-    color: lightgray;
-
-    p {
-      margin: 0;
-    }
+  @media only screen and (max-width: 800px) {
+    justify-content: space-between;
   }
 
   .track-info {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 150px;
 
-    p {
-      margin: 0;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
+    .track-image {
+      height: calc(96px - 2rem);
+      width: calc(96px - 2rem);
 
-    .title {
+      object-fit: cover;
+
+      background-color: #303030;
+      border-radius: 2px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
       font-size: 1rem;
-      font-weight: normal;
+      font-weight: bold;
+      color: lightgray;
+
+      @media only screen and (max-width: 610px) {
+        display: none;
+      }
+
+      p {
+        margin: 0;
+      }
     }
 
-    .artist {
-      font-size: 0.8rem;
-      font-weight: lighter;
+    .track-desc {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 150px;
+      margin-left: 1rem;
+
+      p {
+        margin: 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .title {
+        font-size: 1rem;
+        font-weight: normal;
+      }
+
+      .artist {
+        font-size: 0.8rem;
+        font-weight: lighter;
+      }
     }
   }
 
   .progress {
     flex: 1 1 auto;
+
+    @media only screen and (max-width: 800px) {
+      display: none;
+    }
   }
 
-  .volume-container {
+  .misc {
     display: flex;
-    flex-direction: row;
     align-items: center;
 
-    .volume-icon {
-      cursor: pointer;
-    }
+    .volume-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
 
-    .volume {
-      margin: 0 0.5rem;
+      .volume-icon {
+        cursor: pointer;
+      }
     }
   }
 
-  .track-info, .controls, .progress, .volume-container, .queue-button {
+  .controls, .progress, .misc{
     margin-left: 1rem;
   }
 }
