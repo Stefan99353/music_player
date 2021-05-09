@@ -14,11 +14,11 @@ use actix_web::middleware::Logger;
 use cpal::traits::HostTrait;
 use diesel::r2d2::ConnectionManager;
 use diesel::SqliteConnection;
-use simplelog::{Config, TerminalMode, TermLogger};
 
 use crate::player::RodioPlayer;
 use crate::settings::Settings;
 use crate::ws::hub::WsHub;
+use flexi_logger::{LogTarget, Duplicate, DeferredNow, Record, style, Criterion, Age, Naming, Cleanup};
 
 mod api;
 mod crawler;
@@ -36,11 +36,56 @@ async fn index() -> actix_web::Result<actix_files::NamedFile> {
     Ok(actix_files::NamedFile::open("static/index.html")?)
 }
 
+pub fn log_format_colored(
+    w: &mut dyn std::io::Write,
+    now: &mut DeferredNow,
+    record: &Record,
+) -> Result<(), std::io::Error> {
+    let level = record.level();
+    write!(
+        w,
+        "{} [{}]: {}",
+        style(level, now.now().format("%Y-%m-%d %H:%M:%S")),
+        style(level, record.level()),
+        style(level, &record.args())
+    )
+}
+
+pub fn log_format(
+    w: &mut dyn std::io::Write,
+    now: &mut DeferredNow,
+    record: &Record,
+) -> Result<(), std::io::Error> {
+    write!(
+        w,
+        "{} [{}]: {}",
+        now.now().format("%Y-%m-%d %H:%M:%S"),
+        record.level(),
+        &record.args()
+    )
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // Setup config and logger
+    // Setup settings and logger
     let settings = Settings::new().unwrap();
-    TermLogger::init(settings.log_level, Config::default(), TerminalMode::Mixed).unwrap();
+
+    flexi_logger::Logger::with_str(&settings.log_level)
+        .log_target(LogTarget::File)
+        .directory("logs")
+        .create_symlink("current_run.log")
+        .rotate(
+            Criterion::Age(Age::Day),
+            Naming::Timestamps,
+            Cleanup::KeepLogFiles(14)
+        )
+        .buffer_and_flush()
+        .duplicate_to_stderr(Duplicate::Warn)
+        .format_for_stderr(log_format_colored)
+        .format_for_files(log_format)
+        .start()
+        .unwrap();
+
     debug!("Settings and Logger initialized");
 
     // Setup Database

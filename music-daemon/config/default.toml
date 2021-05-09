@@ -1,0 +1,12 @@
+logLevel = 'Info'
+
+[database]
+file = 'music.db'
+
+[server]
+address = '0.0.0.0'
+port = 80
+
+[[music]]
+saveNew = true
+path = '~/Music'

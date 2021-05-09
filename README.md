@@ -1,14 +1,22 @@
 # TODO
 
-- [ ] Playlists
-  - [ ] Add songs to playlist
-  - [ ] Remove song from playlist 
-- [ ] Upload von Tracks
+- [x] Playlists
+  - [x] Add songs to playlist
+  - [x] Remove song from playlist 
+- [ ] Add/Remove/Update Artist
+- [ ] Add/Remove/Update Album
+- [ ] Add/Remove/Update Tracks
 - [ ] YouTube Download/Stream
 - [ ] Stream Tracks to Browser
 
 # API
- 
+
+## YouTube
+
+- Get Stream URL
+- Download Song to Artist&Album
+- Download Playlist to Artist&Album
+
 ## Artists
 
 | Path                          | Method   | Description              | Filter |

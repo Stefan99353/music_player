@@ -1,40 +1,32 @@
 use std::env;
 
 use config::{Config, ConfigError, Environment, File};
-use log::LevelFilter;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
-#[serde(remote = "LevelFilter")]
-enum LevelFilterDef {
-    Off,
-    Error,
-    Warn,
-    Info,
-    Debug,
-    Trace,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Database {
     pub file: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ApiServer {
     pub address: String,
     pub port: u16,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MusicDirectory {
+    pub save_new: bool,
     pub path: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Settings {
-    #[serde(with = "LevelFilterDef")]
-    pub log_level: LevelFilter,
+    pub log_level: String,
     pub database: Database,
     pub server: ApiServer,
     pub music: Vec<MusicDirectory>,
