@@ -1,4 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+@import "~angular-notifier/styles/core";
+@import "~angular-notifier/styles/themes/theme-material";
+@import "~angular-notifier/styles/types/type-default";
+@import "~angular-notifier/styles/types/type-info";
+@import "~angular-notifier/styles/types/type-success";
+@import "~angular-notifier/styles/types/type-warning";
+@import "~angular-notifier/styles/types/type-error";
 
 html, body {
   height: 100%;

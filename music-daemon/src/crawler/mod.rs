@@ -14,6 +14,10 @@ use crate::models::artists::Artist;
 use crate::models::db_updates::NewDbUpdate;
 use crate::models::images::Image;
 use crate::models::tracks::Track;
+use crate::ws::notifications::hub::WsNotificationHub;
+use actix::Addr;
+use crate::ws::notifications::messages::{Notification, NotificationType};
+use crate::api::get_db_connection;
 
 mod database;
 
@@ -29,24 +33,50 @@ pub struct AlbumPop {
     pub tracks: Vec<Track>,
 }
 
-pub struct Crawler {}
+pub struct Crawler {
+    paths: Vec<String>,
+    db_pool: Arc<DbPool>,
+    notifications: Arc<Addr<WsNotificationHub>>,
+}
 
 impl Crawler {
-    pub fn new() -> Self {
-        Crawler {}
+    pub fn new(
+        paths: Vec<String>,
+        db_pool: Arc<DbPool>,
+        notifications: Arc<Addr<WsNotificationHub>>,
+    ) -> Self {
+        Crawler {
+            paths,
+            db_pool,
+            notifications
+        }
     }
 
-    pub fn start(&self, paths: Vec<String>, pool: Arc<DbPool>) {
+    pub fn start(self) {
         thread::spawn(move || {
-            let conn = pool.get().expect("Couldn't get db connection from pool");
+            let conn = match get_db_connection(self.db_pool){
+                Ok(conn) => conn,
+                Err(err) => {
+                    error!("Couldn't get db connection from pool");
+                    error!("{}", err);
+                    return;
+                }
+            };
             let mut artists: Vec<ArtistPop> = vec![];
+
+            // Send notification that scan started
+            self.notifications.do_send(Notification {
+                message: String::from("Started updating database"),
+                message_type: NotificationType::Info,
+                timestamp: Utc::now().naive_utc()
+            });
 
             let started = Utc::now().naive_utc();
             let (tracks_before, albums_before, artists_before) = get_counts(&conn);
 
             // Check every folder configured in settings
             info!("Scanning configured paths");
-            for path in paths {
+            for path in self.paths {
                 match crawl_root(&path, &mut artists, &conn) {
                     Ok(_) => {
                         // Finished scanning root folder
@@ -84,6 +114,13 @@ impl Crawler {
                 .values(db_update)
                 .execute(&conn)
                 .unwrap();
+
+            // Send notification that scan finished
+            self.notifications.do_send(Notification {
+                message: String::from("Finished updating database"),
+                message_type: NotificationType::Success,
+                timestamp: Utc::now().naive_utc()
+            });
         });
     }
 }

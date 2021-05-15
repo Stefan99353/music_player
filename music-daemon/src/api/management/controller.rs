@@ -1,13 +1,18 @@
+use actix::Addr;
 use actix_web::{Error, get, HttpResponse, post, web};
 
 use crate::crawler::Crawler;
 use crate::DbPool;
 use crate::settings::Settings;
+use crate::ws::notifications::hub::WsNotificationHub;
+
+use super::actions;
 
 #[post("/update_db")]
 pub async fn update_db(
     pool: web::Data<DbPool>,
     settings: web::Data<Settings>,
+    notifications: web::Data<Addr<WsNotificationHub>>,
 ) -> Result<HttpResponse, Error> {
     let settings = settings.into_inner();
 
@@ -17,19 +22,28 @@ pub async fn update_db(
         .map(|d| String::from(&d.path))
         .collect::<Vec<String>>();
 
-    let crawler = Crawler::new();
-
-    crawler.start(paths, pool.into_inner());
+    Crawler::new(
+        paths,
+        pool.into_inner(),
+        notifications.into_inner(),
+    ).start();
 
     Ok(HttpResponse::Accepted().finish())
 }
 
 #[post("/rebuild_db")]
 pub async fn rebuild_db(
-    _pool: web::Data<DbPool>,
-    _settings: web::Data<Settings>,
+    pool: web::Data<DbPool>,
+    settings: web::Data<Settings>,
+    notifications: web::Data<Addr<WsNotificationHub>>,
 ) -> Result<HttpResponse, Error> {
-    todo!("Rebuild database")
+    actions::clear_db(
+        pool.into_inner(),
+        settings.into_inner(),
+        notifications.into_inner(),
+    );
+
+    Ok(HttpResponse::Accepted().finish())
 }
 
 

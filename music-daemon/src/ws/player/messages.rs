@@ -1,6 +1,6 @@
 use actix::prelude::Message;
 use actix::Recipient;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize};
 use uuid::Uuid;
 
 use crate::player::RodioPlayerState;
@@ -22,7 +22,7 @@ pub struct Disconnect {
     pub id: Uuid,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 pub enum RodioCommand {
     Resume,
     Pause,
@@ -34,7 +34,7 @@ pub enum RodioCommand {
     State,
 }
 
-#[derive(Debug, Message, Deserialize, Serialize)]
+#[derive(Debug, Message, Deserialize)]
 #[rtype(result = "()")]
 pub struct RodioCommandMessage {
     pub command: RodioCommand,

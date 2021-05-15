@@ -6,16 +6,17 @@ use actix::{Actor, Context, Handler, Recipient};
 use uuid::Uuid;
 
 use crate::player::{RodioPlayer, RodioPlayerState};
-use crate::ws::messages::{Connect, Disconnect, RodioCommand, RodioCommandMessage, WsRodioStateMessage};
+
+use super::messages::{Connect, Disconnect, RodioCommand, RodioCommandMessage, WsRodioStateMessage};
 
 type Socket = Recipient<WsRodioStateMessage>;
 
-pub struct WsHub {
+pub struct WsPlayerHub {
     player: Arc<Mutex<RodioPlayer>>,
     sessions: HashMap<Uuid, Socket>,
 }
 
-impl WsHub {
+impl WsPlayerHub {
     pub fn new(player: Arc<Mutex<RodioPlayer>>) -> Self {
         Self {
             player,
@@ -36,12 +37,12 @@ impl WsHub {
     }
 }
 
-impl Actor for WsHub {
+impl Actor for WsPlayerHub {
     type Context = Context<Self>;
 }
 
 // Connect Message
-impl Handler<Connect> for WsHub {
+impl Handler<Connect> for WsPlayerHub {
     type Result = ();
 
     fn handle(&mut self, msg: Connect, _ctx: &mut Self::Context) -> Self::Result {
@@ -56,7 +57,7 @@ impl Handler<Connect> for WsHub {
 }
 
 // Disconnect Message
-impl Handler<Disconnect> for WsHub {
+impl Handler<Disconnect> for WsPlayerHub {
     type Result = ();
 
     fn handle(&mut self, msg: Disconnect, _ctx: &mut Self::Context) -> Self::Result {
@@ -64,13 +65,12 @@ impl Handler<Disconnect> for WsHub {
     }
 }
 
-impl Handler<RodioCommandMessage> for WsHub {
+impl Handler<RodioCommandMessage> for WsPlayerHub {
     type Result = ();
 
     fn handle(&mut self, msg: RodioCommandMessage, _ctx: &mut Self::Context) -> Self::Result {
         let mut player = self.player.lock().unwrap();
 
-        // TODO: Handle commands
         match msg.command {
             RodioCommand::Resume => {
                 player.resume();

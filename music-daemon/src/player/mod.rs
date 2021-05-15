@@ -12,8 +12,8 @@ use rodio::{PlayError, Source};
 use serde::{Deserialize, Serialize};
 
 use crate::models::tracks::PopulatedTrack;
-use crate::ws::hub::WsHub;
-use crate::ws::messages::{RodioCommand, RodioCommandMessage};
+use crate::ws::player::hub::WsPlayerHub;
+use crate::ws::player::messages::{RodioCommand, RodioCommandMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -29,7 +29,7 @@ pub struct RodioPlayerState {
 pub struct RodioPlayer {
     sink: rodio::Sink,
     stream_handle: rodio::OutputStreamHandle,
-    ws_hub: Option<Arc<Addr<WsHub>>>,
+    ws_hub: Option<Arc<Addr<WsPlayerHub>>>,
     queue: VecDeque<PopulatedTrack>,
     current_index: usize,
     next_index: usize,
@@ -65,7 +65,7 @@ impl RodioPlayer {
         ))
     }
 
-    pub fn set_ws_connections(&mut self, ws_conns: Arc<Addr<WsHub>>) {
+    pub fn set_ws_connections(&mut self, ws_conns: Arc<Addr<WsPlayerHub>>) {
         self.ws_hub = Some(ws_conns);
     }
 

@@ -34,7 +34,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.wsSubject = webSocket(environment.wsUrl);
+    this.wsSubject = webSocket(environment.wsPlayerUrl);
 
     this.wsSubject.subscribe(value => {
       this.rodioPlayerState = value;

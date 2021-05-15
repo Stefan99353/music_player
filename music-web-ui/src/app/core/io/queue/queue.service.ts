@@ -29,37 +29,14 @@ export class QueueService {
     const params = new HttpParams()
       .set('shuffle', shuffle.toString());
 
-    return this.http.post<void>(this.baseUrl + '/addAlbum', id, {params});
+    return this.http.post<void>(this.baseUrl + '/add/album', id, {params});
   }
 
   addArtist(id: number, shuffle: boolean = false): Observable<void> {
     const params = new HttpParams()
       .set('shuffle', shuffle.toString());
 
-    return this.http.post<void>(this.baseUrl + '/addArtist', id, {params});
-  }
-
-  getTracks(
-    sort?: string,
-    order?: string,
-    page?: number,
-    limit?: number
-  ): Observable<PaginationResult<Track>> {
-    let params = new HttpParams();
-    if (sort) {
-      params = params.set('sort', sort);
-    }
-    if (order) {
-      params = params.set('order', order);
-    }
-    if (page) {
-      params = params.set('page', page.toString());
-    }
-    if (limit) {
-      params = params.set('limit', limit.toString());
-    }
-
-    return this.http.get<PaginationResult<Track>>(this.baseUrl, {params});
+    return this.http.post<void>(this.baseUrl + '/add/artist', id, {params});
   }
 
   clear(): Observable<void> {

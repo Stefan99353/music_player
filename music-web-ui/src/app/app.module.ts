@@ -39,8 +39,9 @@ import {PlaylistListComponent} from './core/ui/playlist-list/playlist-list.compo
 import {AddPlaylistDialogComponent} from './core/dialogs/add-playlist-dialog/add-playlist-dialog.component';
 import {FormsModule} from '@angular/forms';
 import {ConfirmDialogComponent} from './core/dialogs/confirm-dialog/confirm-dialog.component';
-import {MatSnackBarModule} from "@angular/material/snack-bar";
-import {MatMenuModule} from "@angular/material/menu";
+import {MatMenuModule} from '@angular/material/menu';
+import {NotifierModule} from 'angular-notifier';
+import { NotificationsComponent } from './core/notifications/notifications.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import {MatMenuModule} from "@angular/material/menu";
     PlaylistListComponent,
     AddPlaylistDialogComponent,
     ConfirmDialogComponent,
+    NotificationsComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +69,17 @@ import {MatMenuModule} from "@angular/material/menu";
     BrowserAnimationsModule,
     HttpClientModule,
     NgScrollbarModule,
+    FormsModule,
+    NotifierModule.withConfig({
+      position: {
+        horizontal: {
+          position: 'right'
+        },
+        vertical: {
+          position: 'top'
+        }
+      }
+    }),
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
@@ -85,8 +98,6 @@ import {MatMenuModule} from "@angular/material/menu";
     MatSidenavModule,
     MatSlideToggleModule,
     MatDialogModule,
-    FormsModule,
-    MatSnackBarModule,
     MatMenuModule
   ],
   providers: [],

@@ -17,8 +17,9 @@ use diesel::SqliteConnection;
 
 use crate::player::RodioPlayer;
 use crate::settings::Settings;
-use crate::ws::hub::WsHub;
+use crate::ws::player::hub::WsPlayerHub;
 use flexi_logger::{LogTarget, Duplicate, DeferredNow, Record, style, Criterion, Age, Naming, Cleanup};
+use crate::ws::notifications::hub::WsNotificationHub;
 
 mod api;
 mod crawler;
@@ -107,19 +108,19 @@ async fn main() -> std::io::Result<()> {
     let (player, _stream) = RodioPlayer::new(device).unwrap();
     let player = web::Data::new(Mutex::new(player));
 
-    // Create Actor for WebSocket Connection
-    let ws_hub = web::Data::new(WsHub::new(player.clone().into_inner()).start());
+    // Create Actor for Player WebSocket Connection
+    let ws_player_hub = web::Data::new(WsPlayerHub::new(player.clone().into_inner()).start());
+    let ws_notification_hub = web::Data::new(WsNotificationHub::new().start());
 
     {
         let mut p = player.lock().unwrap();
-        p.set_ws_connections(ws_hub.clone().into_inner());
+        p.set_ws_connections(ws_player_hub.clone().into_inner());
     }
 
     // Start player
     RodioPlayer::start_player(player.clone().into_inner());
 
     // Start API Server
-    info!("Starting API Server");
     let server_settings = settings.clone();
     HttpServer::new(move || {
         let mut app = App::new().wrap(
@@ -132,11 +133,12 @@ async fn main() -> std::io::Result<()> {
             .data(pool.clone())
             .app_data(player.clone())
             .data(server_settings.clone())
-            .app_data(ws_hub.clone());
+            .app_data(ws_player_hub.clone())
+            .app_data(ws_notification_hub.clone());
 
         let mut api_scope = web::scope("/api/v1/");
 
-        api_scope = ws::start_connection::register(api_scope);
+        api_scope = ws::register(api_scope);
         api_scope = api::artists::register(api_scope);
         api_scope = api::albums::register(api_scope);
         api_scope = api::tracks::register(api_scope);

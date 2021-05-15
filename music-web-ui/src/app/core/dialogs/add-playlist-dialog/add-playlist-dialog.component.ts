@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {PlaylistService} from '../../io/playlist/playlist.service';
 import {Playlist} from '../../../models/playlist';
-import {SnackbarService} from "../../io/snackbar/snackbar.service";
+import {NotifierService} from "angular-notifier";
 
 export interface AddPlaylistDialogData {
   new: boolean;
@@ -25,10 +25,8 @@ export class AddPlaylistDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<AddPlaylistDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AddPlaylistDialogData,
     private playlistService: PlaylistService,
-    private snackbarService: SnackbarService
+    private notifierService: NotifierService
   ) {
-    console.log(data);
-
     this.id = data.playlist.id;
     this.name = data.playlist.name;
     this.icon = data.playlist.icon || '';
@@ -55,7 +53,7 @@ export class AddPlaylistDialogComponent implements OnInit {
         this.dialogRef.close(value);
       });
     } else {
-      this.snackbarService.openSnackBar('Name needs to be at least 1 character long');
+      this.notifierService.notify('default', 'Name needs to be at least 1 character long');
     }
   }
 
@@ -70,7 +68,7 @@ export class AddPlaylistDialogComponent implements OnInit {
         this.dialogRef.close(value);
       });
     } else {
-      this.snackbarService.openSnackBar('Name needs to be at least 1 character long');
+      this.notifierService.notify('default', 'Name needs to be at least 1 character long');
     }
   }
 }
