@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Playlist} from '../../../models/playlist';
-import {PlaylistService} from '../../io/playlist/playlist.service';
 
 @Component({
   selector: 'app-playlist-list',
@@ -9,6 +8,7 @@ import {PlaylistService} from '../../io/playlist/playlist.service';
 })
 export class PlaylistListComponent implements OnInit {
   @Input() playlists: Playlist[] = [];
+
   @Output() playlistClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() editClicked: EventEmitter<Playlist> = new EventEmitter<Playlist>();
   @Output() deleteClicked: EventEmitter<number> = new EventEmitter<number>();

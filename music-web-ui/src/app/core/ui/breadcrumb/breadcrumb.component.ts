@@ -15,12 +15,12 @@ import {PlaylistService} from '../../io/playlist/playlist.service';
 })
 export class BreadcrumbComponent implements OnInit {
 
-  artistId?: number;
-  albumId?: number;
-  playlistId?: number;
-  artist?: Artist;
-  album?: Album;
-  playlist?: Playlist;
+  artistId: number | null = null;
+  albumId: number | null = null;
+  playlistId: number | null = null;
+  artist: Artist | null = null;
+  album: Album | null = null;
+  playlist: Playlist | null = null;
 
   elements: any[] = [
     {
@@ -43,31 +43,31 @@ export class BreadcrumbComponent implements OnInit {
       .subscribe(e => {
         const value = e as NavigationEnd;
 
-        this.artistId = undefined;
-        this.albumId = undefined;
-        this.playlistId = undefined;
-        this.artist = undefined;
-        this.album = undefined;
-        this.playlist = undefined;
+        this.artistId = null;
+        this.albumId = null;
+        this.playlistId = null;
+        this.artist = null;
+        this.album = null;
+        this.playlist = null;
 
         const url = value.url.substr(1).split('/');
 
         if (url[0] === 'artists' && url[1] !== undefined) {
-          this.artistId = !isNaN(parseInt(url[1], 10)) ? parseInt(url[1], 10) : undefined;
+          this.artistId = !isNaN(parseInt(url[1], 10)) ? parseInt(url[1], 10) : null;
         } else if (url[0] === 'albums') {
-          this.albumId = !isNaN(parseInt(url[1], 10)) ? parseInt(url[1], 10) : undefined;
+          this.albumId = !isNaN(parseInt(url[1], 10)) ? parseInt(url[1], 10) : null;
         } else if (url[0] === 'playlists') {
-          this.playlistId = !isNaN(parseInt(url[1], 10)) ? parseInt(url[1], 10) : undefined;
+          this.playlistId = !isNaN(parseInt(url[1], 10)) ? parseInt(url[1], 10) : null;
         }
 
-        if (this.artistId !== undefined) {
+        if (this.artistId !== null) {
           this.artistService.getArtist(this.artistId).subscribe(art => {
             this.artist = art;
             this.buildBreadCrumb();
           });
         }
 
-        if (this.albumId !== undefined) {
+        if (this.albumId !== null) {
           this.albumService.getAlbum(this.albumId).subscribe(alb => {
             this.album = alb;
 
@@ -78,7 +78,7 @@ export class BreadcrumbComponent implements OnInit {
           });
         }
 
-        if (this.playlistId !== undefined) {
+        if (this.playlistId !== null) {
           this.playlistService.getPlaylist(this.playlistId).subscribe(pll => {
             this.playlist = pll;
             this.buildBreadCrumb();
@@ -98,21 +98,21 @@ export class BreadcrumbComponent implements OnInit {
       }
     ];
 
-    if (this.artist !== undefined) {
+    if (this.artist !== null) {
       this.elements.push({
         name: this.artist.name,
         link: 'artists/' + this.artist.id + '/albums',
       });
     }
 
-    if (this.album !== undefined) {
+    if (this.album !== null) {
       this.elements.push({
         name: this.album.title,
         link: 'albums/' + this.album.id + '/tracks',
       });
     }
 
-    if (this.playlist !== undefined) {
+    if (this.playlist !== null) {
       this.elements.push({
         name: this.playlist.name,
         link: 'playlists/' + this.playlist.id + '/tracks',

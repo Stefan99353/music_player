@@ -22,7 +22,9 @@ export class PlaylistsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.playlistService.allPlaylists({}).subscribe(value => {
+    this.playlistService.allPlaylists({
+      filter: null, limit: null, order: null, page: null, sort: null
+    }).subscribe(value => {
       this.playlists = value.items;
     });
   }
@@ -44,7 +46,7 @@ export class PlaylistsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(value => {
-      if (value !== undefined) {
+      if (value !== null && value !== undefined) {
         this.playlists.push(value);
       }
     });
@@ -60,7 +62,7 @@ export class PlaylistsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(value => {
-      if (value !== undefined) {
+      if (value !== null && value !== undefined) {
         this.playlists.splice(
           this.playlists.indexOf(playlist),
           1,

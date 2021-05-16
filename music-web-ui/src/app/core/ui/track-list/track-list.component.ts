@@ -19,9 +19,9 @@ import {MatMenuTrigger} from '@angular/material/menu';
   styleUrls: ['./track-list.component.scss'],
 })
 export class TrackListComponent implements AfterViewInit, OnInit {
-  @Input() artistId?: number;
-  @Input() albumId?: number;
-  @Input() playlistId?: number;
+  @Input() artistId: number | null = null;
+  @Input() albumId: number | null = null;
+  @Input() playlistId: number | null = null;
 
   @Output() trackClicked: EventEmitter<number> = new EventEmitter<number>();
 
@@ -29,18 +29,20 @@ export class TrackListComponent implements AfterViewInit, OnInit {
   pageSize = 50;
   filteredAndPagedTracks: Observable<Track[]> = of([]);
 
-  resultsLength = 0;
+  resultsLength: number | null = null;
   isLoadingResults = true;
-  filter?: string;
+  filter: string | null = null;
 
   @ViewChild(MatTable) table!: MatTable<Track[]>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-
   @ViewChild(MatMenuTrigger) contextMenu!: MatMenuTrigger;
+
   contextMenuPosition = {x: '0px', y: '0px'};
 
-  playlists$ = this.playlistService.allPlaylists({});
+  playlists$ = this.playlistService.allPlaylists({
+    filter: null, limit: null, order: null, page: null, sort: null
+  });
 
   constructor(
     private artistService: ArtistService,
@@ -54,11 +56,11 @@ export class TrackListComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.artistId !== undefined) {
+    if (this.artistId !== null) {
       this.displayedColumns = this.displayedColumns.filter(x => x !== 'artist_name');
     }
 
-    if (this.albumId !== undefined) {
+    if (this.albumId !== null) {
       this.displayedColumns = this.displayedColumns.filter(x => x !== 'artist_name' && x !== 'album_title');
     }
 
@@ -89,13 +91,13 @@ export class TrackListComponent implements AfterViewInit, OnInit {
   }
 
   allTracks(filter: RequestFilter): Observable<PaginationResult<Track>> {
-    if (this.artistId !== undefined) {
+    if (this.artistId !== null) {
       return this.artistService.allTracks(this.artistId, filter);
     }
-    if (this.albumId !== undefined) {
+    if (this.albumId !== null) {
       return this.albumService.allTracks(this.albumId, filter);
     }
-    if (this.playlistId !== undefined) {
+    if (this.playlistId !== null) {
       return this.playlistService.allTracks(this.playlistId, filter);
     }
     return this.trackService.allTracks(filter);
@@ -130,7 +132,7 @@ export class TrackListComponent implements AfterViewInit, OnInit {
 
   removeFromPlaylist(trackId: number): void {
     // TODO: Error handling
-    if (this.playlistId !== undefined) {
+    if (this.playlistId !== null) {
       this.playlistService.deleteTrack(this.playlistId, trackId)
         .subscribe(() => {
           this.sort.sortChange.emit({active: this.sort.active, direction: this.sort.direction});

@@ -15,7 +15,7 @@ export class QueueComponent implements OnInit {
   queue: Track[] = [];
 
   constructor(
-    public dialogRef: MatDialogRef<QueueComponent>,
+    private dialogRef: MatDialogRef<QueueComponent>,
     private queueService: QueueService,
   ) {
   }

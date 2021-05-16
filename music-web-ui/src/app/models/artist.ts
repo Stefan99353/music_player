@@ -1,7 +1,7 @@
 export interface Artist {
   id: number;
   name: string;
-  imageId?: number;
+  imageId: number | null;
   inserted: Date;
   updated: Date;
 }

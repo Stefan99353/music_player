@@ -24,7 +24,7 @@ export enum NotificationType {
 })
 export class NotificationsComponent implements OnInit {
 
-  wsSubject?: WebSocketSubject<Notification>;
+  wsSubject: WebSocketSubject<Notification> | null = null;
 
   constructor(private notifierService: NotifierService) {
   }

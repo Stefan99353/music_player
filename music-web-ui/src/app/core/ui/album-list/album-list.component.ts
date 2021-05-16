@@ -4,6 +4,7 @@ import {Album} from '../../../models/album';
 import {AlbumService} from '../../io/album/album.service';
 import {ActivatedRoute} from '@angular/router';
 import {ArtistService} from '../../io/artist/artist.service';
+import {RequestFilter} from '../../../models/request-filter';
 
 @Component({
   selector: 'app-album-list',
@@ -12,7 +13,7 @@ import {ArtistService} from '../../io/artist/artist.service';
 })
 export class AlbumListComponent implements OnInit {
   imageUrl = environment.baseUrl + 'images/';
-  artistId?: number;
+  artistId: number | null = null;
   albums: Album[] = [];
 
   @Output() albumClicked: EventEmitter<number> = new EventEmitter<number>();
@@ -31,12 +32,16 @@ export class AlbumListComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.artistId = params.artistId;
 
-      if (this.artistId !== undefined) {
-        this.artistService.allAlbums(this.artistId, {}).subscribe(value => {
+      const filter: RequestFilter = {
+        filter: null, limit: null, order: null, page: null, sort: null
+      };
+
+      if (this.artistId !== null) {
+        this.artistService.allAlbums(this.artistId, filter).subscribe(value => {
           this.albums = value.items;
         });
       } else {
-        this.albumService.allAlbums({}).subscribe(value => {
+        this.albumService.allAlbums(filter).subscribe(value => {
           this.albums = value.items;
         });
       }

@@ -5,6 +5,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {QueueComponent} from '../../dialogs/queue/queue.component';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 
+interface RodioCommandMessage {
+  command: 'Resume' | 'Pause' | 'Stop' | 'Next' | 'Prev' | 'State' | { Volume: number } | { Seek: number };
+}
 
 @Component({
   selector: 'app-player-control',
@@ -14,8 +17,8 @@ import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 export class PlayerControlComponent implements OnInit, OnDestroy {
   imageUrl = environment.baseUrl + 'images/';
 
-  wsSubject?: WebSocketSubject<any>;
-  progressLoop?: number;
+  wsSubject: WebSocketSubject<RodioPlayerState | RodioCommandMessage> | null = null;
+  progressLoop: number | null = null;
 
   rodioPlayerState: RodioPlayerState = {
     currentTrack: null,
@@ -24,22 +27,29 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
     time: 0,
   };
 
-  imageId?: number;
-  private previousVolume?: number;
+  imageId: number | null = null;
+  private previousVolume: number | null = null;
 
   @ViewChild('audioPlayer') audioPlayer!: HTMLAudioElement;
 
-  constructor(public dialog: MatDialog) {
+  constructor(private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
     this.wsSubject = webSocket(environment.wsPlayerUrl);
 
     this.wsSubject.subscribe(value => {
-      this.rodioPlayerState = value;
+      this.rodioPlayerState = value as RodioPlayerState;
 
-      clearInterval(this.progressLoop);
-      if (this.rodioPlayerState && this.rodioPlayerState.currentTrack !== null && !this.rodioPlayerState.paused) {
+      if (this.progressLoop !== null) {
+        clearInterval(this.progressLoop);
+      }
+
+      if (
+        this.rodioPlayerState &&
+        this.rodioPlayerState.currentTrack !== null &&
+        !this.rodioPlayerState.paused
+      ) {
         // @ts-ignore
         this.progressLoop = setInterval(() => {
           if (this.rodioPlayerState) {
@@ -49,7 +59,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
       }
 
       // Check image
-      if (this.rodioPlayerState.currentTrack) {
+      if (this.rodioPlayerState.currentTrack !== null) {
         this.imageId = this.rodioPlayerState.currentTrack.imageId;
       }
     });
@@ -68,57 +78,75 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
   }
 
   resumePause(): void {
-    if (!this.rodioPlayerState) {
+    if (this.wsSubject === null) {
       return;
     }
 
-    if (this.rodioPlayerState?.paused) {
-      this.wsSubject?.next({command: 'Resume'});
+    if (this.rodioPlayerState.paused) {
+      this.wsSubject.next({command: 'Resume'});
     } else {
-      this.wsSubject?.next({command: 'Pause'});
+      this.wsSubject.next({command: 'Pause'});
     }
   }
 
   stop(): void {
-    this.wsSubject?.next({command: 'Stop'});
+    if (this.wsSubject === null) {
+      return;
+    }
+
+    this.wsSubject.next({command: 'Stop'});
   }
 
   prev(): void {
-    this.wsSubject?.next({command: 'Prev'});
+    if (this.wsSubject === null) {
+      return;
+    }
+
+    this.wsSubject.next({command: 'Prev'});
   }
 
   next(): void {
-    this.wsSubject?.next({command: 'Next'});
+    if (this.wsSubject === null) {
+      return;
+    }
+
+    this.wsSubject.next({command: 'Next'});
   }
 
-  setVolume(volume?: number | null): void {
-    if (volume !== undefined && volume !== null) {
-      this.wsSubject?.next({command: {Volume: volume}});
+  setVolume(volume: number | null): void {
+    if (this.wsSubject === null) {
+      return;
+    }
+
+    if (volume !== null) {
+      this.wsSubject.next({command: {Volume: volume}});
     }
   }
 
   toggleVolume(): void {
-    if (this.rodioPlayerState?.volume === 0) {
+    if (this.rodioPlayerState.volume === 0) {
       this.setVolume(this.previousVolume);
     } else {
-      this.previousVolume = this.rodioPlayerState?.volume;
+      this.previousVolume = this.rodioPlayerState.volume;
       this.setVolume(0);
     }
   }
 
   openQueue(): void {
-    const dialogRef = this.dialog.open(QueueComponent, {
+    this.dialog.open(QueueComponent, {
       width: '100%'
     });
   }
 
   ngOnDestroy(): void {
-    this.wsSubject?.complete();
+    if (this.wsSubject !== null) {
+      this.wsSubject.complete();
+    }
   }
 
   seek_to(to: number | null): void {
-    if (to !== null) {
-      this.wsSubject?.next({command: {Seek: to}});
+    if (to !== null && this.wsSubject !== null) {
+      this.wsSubject.next({command: {Seek: to}});
     }
   }
 }

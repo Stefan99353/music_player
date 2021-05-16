@@ -9,7 +9,7 @@ import {QueueService} from '../../core/io/queue/queue.service';
   styleUrls: ['./albums.component.scss']
 })
 export class AlbumsComponent implements OnInit {
-  artistId?: number;
+  artistId: number | null = null;
   grid = true;
 
   constructor(
@@ -22,7 +22,7 @@ export class AlbumsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.artistId = params.artistId;
+      this.artistId = params.artistId || null;
     });
 
     this.storageService.storageObservable().subscribe(value => {
@@ -37,7 +37,7 @@ export class AlbumsComponent implements OnInit {
     if (albumId >= 0) {
       this.router.navigate(['albums', albumId, 'tracks']);
     } else {
-      if (this.artistId && this.artistId >= 0) {
+      if (this.artistId !== null && this.artistId >= 0) {
         this.router.navigate(['artists', this.artistId, 'tracks']);
       } else {
         this.router.navigate(['tracks']);

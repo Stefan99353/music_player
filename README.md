@@ -6,16 +6,14 @@
 - [ ] Add/Remove/Update Artist
 - [ ] Add/Remove/Update Album
 - [ ] Add/Remove/Update Tracks
-- [ ] YouTube Download/Stream
+- [ ] YouTube Download
 - [ ] Stream Tracks to Browser
 
 # API
 
 ## YouTube
 
-- Get Stream URL
-- Download Song to Artist&Album
-- Download Playlist to Artist&Album
+- Download URL to Artist&Album
 
 ## Artists
 

@@ -12,9 +12,9 @@ export class TracksComponent implements OnInit {
 
   imageUrl = environment.baseUrl + 'images/';
 
-  artistId?: number;
-  albumId?: number;
-  playlistId?: number;
+  artistId: number | null = null;
+  albumId: number | null = null;
+  playlistId: number | null = null;
 
   constructor(
     private queueService: QueueService,
@@ -24,9 +24,9 @@ export class TracksComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(value => {
-      this.artistId = !isNaN(parseInt(value.artistId, 10)) ? parseInt(value.artistId, 10) : undefined;
-      this.albumId = !isNaN(parseInt(value.albumId, 10)) ? parseInt(value.albumId, 10) : undefined;
-      this.playlistId = !isNaN(parseInt(value.playlistId, 10)) ? parseInt(value.playlistId, 10) : undefined;
+      this.artistId = !isNaN(parseInt(value.artistId, 10)) ? parseInt(value.artistId, 10) : null;
+      this.albumId = !isNaN(parseInt(value.albumId, 10)) ? parseInt(value.albumId, 10) : null;
+      this.playlistId = !isNaN(parseInt(value.playlistId, 10)) ? parseInt(value.playlistId, 10) : null;
     });
   }
 

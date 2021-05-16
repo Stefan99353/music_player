@@ -3,11 +3,11 @@ import {HttpParams} from '@angular/common/http';
 export interface RequestFilter {
   [key: string]: any;
 
-  filter?: string;
-  sort?: string;
-  order?: string;
-  page?: number;
-  limit?: number;
+  filter: string | null;
+  sort: string | null;
+  order: string | null;
+  page: number | null;
+  limit: number | null;
 }
 
 export function buildParams(filter: RequestFilter): HttpParams {
@@ -15,7 +15,7 @@ export function buildParams(filter: RequestFilter): HttpParams {
 
   const keys = Object.keys(filter);
   keys.forEach(key => {
-    if (filter[key] !== undefined) {
+    if (filter[key] !== null) {
       params = params.set(key, filter[key].toString());
     }
   });

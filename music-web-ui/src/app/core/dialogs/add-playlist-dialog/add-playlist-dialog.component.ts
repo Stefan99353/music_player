@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {PlaylistService} from '../../io/playlist/playlist.service';
 import {Playlist} from '../../../models/playlist';
-import {NotifierService} from "angular-notifier";
+import {NotifierService} from 'angular-notifier';
 
 export interface AddPlaylistDialogData {
   new: boolean;
@@ -47,8 +47,10 @@ export class AddPlaylistDialogComponent implements OnInit {
       this.playlistService.addPlaylist({
         id: 0,
         name: this.name,
-        icon: this.icon || undefined,
-        description: this.description || undefined,
+        icon: this.icon || null,
+        description: this.description || null,
+        inserted: new Date(),
+        updated: new Date()
       }).subscribe(value => {
         this.dialogRef.close(value);
       });
@@ -63,7 +65,9 @@ export class AddPlaylistDialogComponent implements OnInit {
         id: 0,
         name: this.name,
         icon: this.icon,
-        description: this.description
+        description: this.description,
+        inserted: new Date(),
+        updated: new Date()
       }).subscribe(value => {
         this.dialogRef.close(value);
       });

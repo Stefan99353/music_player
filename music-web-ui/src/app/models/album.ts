@@ -1,11 +1,11 @@
 export interface Album {
   id: number;
   title: string;
-  trackCount?: number | undefined;
-  discCount?: number | undefined;
-  year?: number | undefined;
-  rating?: number | undefined;
-  imageId?: number | undefined;
+  trackCount: number | null;
+  discCount: number | null;
+  year: number | null;
+  rating: number | null;
+  imageId: number | null;
   artistId: number;
   inserted: Date;
   updated: Date;

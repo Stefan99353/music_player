@@ -1,8 +1,8 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Router} from '@angular/router';
 import {ManagementService} from '../../io/management/management.service';
-import {PlaylistService} from "../../io/playlist/playlist.service";
-import {Playlist} from "../../../models/playlist";
+import {PlaylistService} from '../../io/playlist/playlist.service';
+import {Playlist} from '../../../models/playlist';
 
 @Component({
   selector: 'app-sidenav',
@@ -45,7 +45,13 @@ export class SidenavComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.playlistService.allPlaylists({}).subscribe(value => {
+    this.playlistService.allPlaylists({
+      filter: null,
+      limit: null,
+      order: null,
+      page: null,
+      sort: null
+    }).subscribe(value => {
       this.playlists = value.items;
     });
   }
@@ -62,7 +68,5 @@ export class SidenavComponent implements OnInit {
 
   updateDb(): void {
     this.managementService.updateDb().subscribe();
-
-    // TODO: Show Popup
   }
 }
