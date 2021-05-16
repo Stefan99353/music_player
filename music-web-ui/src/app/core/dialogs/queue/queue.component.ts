@@ -1,5 +1,5 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, OnInit} from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 import {QueueService} from '../../io/queue/queue.service';
 import {Track} from '../../../models/track';
 
@@ -16,7 +16,6 @@ export class QueueComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<QueueComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: number | undefined,
     private queueService: QueueService,
   ) {
   }

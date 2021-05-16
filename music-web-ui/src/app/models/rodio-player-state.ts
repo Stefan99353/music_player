@@ -1,9 +1,7 @@
 import {Track} from './track';
 
 export interface RodioPlayerState {
-  currentTrack?: Track | undefined;
-  currentIndex: number;
-  currentlyPlaying: boolean;
+  currentTrack: Track | null;
   paused: boolean;
   volume: number;
   time: number;

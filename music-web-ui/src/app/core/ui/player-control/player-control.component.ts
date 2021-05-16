@@ -18,8 +18,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
   progressLoop?: number;
 
   rodioPlayerState: RodioPlayerState = {
-    currentIndex: 0,
-    currentlyPlaying: false,
+    currentTrack: null,
     paused: false,
     volume: 0.5,
     time: 0,
@@ -40,7 +39,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
       this.rodioPlayerState = value;
 
       clearInterval(this.progressLoop);
-      if (this.rodioPlayerState && this.rodioPlayerState.currentlyPlaying && !this.rodioPlayerState.paused) {
+      if (this.rodioPlayerState && this.rodioPlayerState.currentTrack !== null && !this.rodioPlayerState.paused) {
         // @ts-ignore
         this.progressLoop = setInterval(() => {
           if (this.rodioPlayerState) {
@@ -109,8 +108,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
 
   openQueue(): void {
     const dialogRef = this.dialog.open(QueueComponent, {
-      width: '100%',
-      data: this.rodioPlayerState?.currentIndex
+      width: '100%'
     });
   }
 

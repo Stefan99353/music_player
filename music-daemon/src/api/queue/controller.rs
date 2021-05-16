@@ -34,9 +34,8 @@ pub async fn length(
     let player = player.lock().unwrap();
 
     let length = player.get_queue().len();
-    let i = player.get_state().current_index;
 
-    Ok(HttpResponse::Ok().json(length - i))
+    Ok(HttpResponse::Ok().json(length))
 }
 
 #[post("add")]

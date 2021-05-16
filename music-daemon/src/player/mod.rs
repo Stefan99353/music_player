@@ -19,8 +19,6 @@ use crate::ws::player::messages::{RodioCommand, RodioCommandMessage};
 #[serde(rename_all = "camelCase")]
 pub struct RodioPlayerState {
     pub current_track: Option<PopulatedTrack>,
-    pub current_index: usize,
-    pub currently_playing: bool,
     pub paused: bool,
     pub volume: f32,
     pub time: u128,
@@ -30,9 +28,9 @@ pub struct RodioPlayer {
     sink: rodio::Sink,
     stream_handle: rodio::OutputStreamHandle,
     ws_hub: Option<Arc<Addr<WsPlayerHub>>>,
-    queue: VecDeque<PopulatedTrack>,
-    current_index: usize,
-    next_index: usize,
+    prev_tracks: VecDeque<PopulatedTrack>,
+    current_track: Option<PopulatedTrack>,
+    next_tracks: VecDeque<PopulatedTrack>,
     seek_to: Option<Duration>,
     paused: bool,
     volume: f32,
@@ -52,9 +50,9 @@ impl RodioPlayer {
                 sink,
                 stream_handle,
                 ws_hub: None,
-                queue: VecDeque::new(),
-                current_index: 0,
-                next_index: 0,
+                prev_tracks: VecDeque::new(),
+                current_track: None,
+                next_tracks: VecDeque::new(),
                 seek_to: None,
                 paused: false,
                 volume: 0.5,
@@ -78,7 +76,7 @@ impl RodioPlayer {
 
     pub fn add_track(&mut self, track: PopulatedTrack) {
         debug!("Adding track '{}'", &track.title);
-        self.queue.push_back(track);
+        self.next_tracks.push_back(track);
     }
 
     pub fn add_tracks(&mut self, tracks: Vec<PopulatedTrack>, shuffle: bool) {
@@ -90,19 +88,12 @@ impl RodioPlayer {
             tracks.shuffle(&mut rng);
         }
 
-        self.queue.extend(tracks.into_iter());
+        self.next_tracks.extend(tracks.into_iter());
     }
 
     pub fn clear_queue(&mut self) {
-        self.queue = VecDeque::new();
-        self.current_index = 0;
-        self.next_index = 0;
+        self.next_tracks = VecDeque::new();
         self.seek_to = None;
-
-        // Clear next tracks
-        // while self.queue.len() > self.current_index + 1 {
-        //     self.queue.pop_back();
-        // }
     }
 
     pub fn resume(&mut self) {
@@ -142,15 +133,15 @@ impl RodioPlayer {
 
         self.sink = rodio::Sink::try_new(&self.stream_handle)?;
         self.sink.set_volume(self.volume);
-        self.queue = VecDeque::new();
-        self.current_index = 0;
-        self.next_index = 0;
+        self.prev_tracks = VecDeque::new();
+        self.current_track = None;
+        self.next_tracks = VecDeque::new();
         self.seek_to = None;
         self.paused = false;
         self.current_started_at = None;
         self.current_paused_at = None;
 
-        // self.ping_ws();
+        self.ping_ws();
 
         Ok(())
     }
@@ -165,19 +156,24 @@ impl RodioPlayer {
             self.sink.pause();
         }
 
-        self.ping_ws();
+        // self.ping_ws();
 
         Ok(())
     }
 
     pub fn prev(&mut self) -> anyhow::Result<()> {
         debug!("Skip previous");
-        if self.current_index == 0 {
+        if self.prev_tracks.len() < 1 {
             return Err(Error::msg("No previous tracks available"));
         }
 
         self.sink.stop();
-        self.next_index = self.current_index - 1;
+
+        if let Some(current_track) = &self.current_track {
+            self.next_tracks.push_front(current_track.clone())
+        }
+
+        self.next_tracks.push_front(self.prev_tracks.pop_back().unwrap());
 
         self.sink = rodio::Sink::try_new(&self.stream_handle)?;
         self.sink.set_volume(self.volume);
@@ -185,7 +181,7 @@ impl RodioPlayer {
             self.sink.pause();
         }
 
-        self.ping_ws();
+        // self.ping_ws();
 
         Ok(())
     }
@@ -195,7 +191,10 @@ impl RodioPlayer {
         self.seek_to = Some(to);
 
         self.sink.stop();
-        self.next_index = self.current_index;
+
+        if let Some(current_track) = &self.current_track {
+            self.next_tracks.push_front(current_track.clone())
+        }
 
         self.sink = rodio::Sink::try_new(&self.stream_handle)?;
         self.sink.set_volume(self.volume);
@@ -225,15 +224,13 @@ impl RodioPlayer {
     }
 
     pub fn get_queue(&self) -> Vec<PopulatedTrack> {
-        // self.queue.range(self.current_index..).cloned().collect()
-        self.queue.iter().skip(self.current_index + 1).cloned().collect()
+        self.next_tracks.iter().cloned().collect()
     }
 
     pub fn get_state(&self) -> RodioPlayerState {
         debug!("Getting state");
-        let current_track = self.queue.get(self.current_index);
 
-        let time = if current_track.is_some() {
+        let time = if self.current_track.is_some() {
             if let (Some(paused_at), true) = (self.current_paused_at, self.paused) {
                 paused_at.as_millis()
             } else if let Some(started) = self.current_started_at {
@@ -246,12 +243,9 @@ impl RodioPlayer {
             0
         };
 
-        let currently_playing = self.len() > 0 && !self.paused;
 
         RodioPlayerState {
-            current_track: current_track.cloned(),
-            current_index: self.current_index,
-            currently_playing,
+            current_track: self.current_track.clone(),
             paused: self.paused,
             volume: self.volume,
             time,
@@ -270,6 +264,10 @@ impl RodioPlayer {
                     let _ = wait_till_end(player.clone()).join();
 
                     let mut player = player.lock().unwrap();
+                    if let Some(prev_track) = player.current_track.clone() {
+                        player.prev_tracks.push_back(prev_track);
+                    }
+                    player.current_track = None;
                     player.current_started_at = None;
                     player.current_paused_at = None;
 
@@ -287,13 +285,10 @@ impl RodioPlayer {
 fn player_cycle(player: Arc<Mutex<RodioPlayer>>) -> anyhow::Result<bool> {
     let mut player = player.lock().unwrap();
 
-    let track = player.queue.get(player.next_index).cloned();
+    let track = player.next_tracks.pop_front();
 
     if let Some(next_track) = track {
         debug!("Found track {}", &next_track.title);
-        player.current_index = player.next_index;
-        player.next_index += 1;
-
         let source = next_track.source()?;
 
         let mut now = Utc::now().timestamp_millis() as u128;
@@ -307,14 +302,16 @@ fn player_cycle(player: Arc<Mutex<RodioPlayer>>) -> anyhow::Result<bool> {
             player.sink.append(source);
         }
 
+        player.current_track = Some(next_track);
+
         player.current_started_at = Some(now);
 
         player.ping_ws();
 
-        return Ok(true);
+        Ok(true)
+    } else {
+        Ok(false)
     }
-
-    Ok(false)
 }
 
 #[allow(dead_code)]
@@ -324,8 +321,6 @@ fn wait_till_end(player: Arc<Mutex<RodioPlayer>>) -> JoinHandle<()> {
         if player.sink.len() == 0 {
             break;
         }
-
-        // player.ping_ws();
 
         drop(player);
 
