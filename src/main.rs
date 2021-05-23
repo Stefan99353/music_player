@@ -37,56 +37,13 @@ async fn index() -> actix_web::Result<actix_files::NamedFile> {
     Ok(actix_files::NamedFile::open("static/index.html")?)
 }
 
-pub fn log_format_colored(
-    w: &mut dyn std::io::Write,
-    now: &mut DeferredNow,
-    record: &Record,
-) -> Result<(), std::io::Error> {
-    let level = record.level();
-    write!(
-        w,
-        "{} [{}]: {}",
-        style(level, now.now().format("%Y-%m-%d %H:%M:%S")),
-        style(level, record.level()),
-        style(level, &record.args())
-    )
-}
-
-pub fn log_format(
-    w: &mut dyn std::io::Write,
-    now: &mut DeferredNow,
-    record: &Record,
-) -> Result<(), std::io::Error> {
-    write!(
-        w,
-        "{} [{}]: {}",
-        now.now().format("%Y-%m-%d %H:%M:%S"),
-        record.level(),
-        &record.args()
-    )
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // Setup settings and logger
-    let settings = Settings::new().unwrap();
+    // Setup settings
+    let settings = Settings::new().expect("Error reading settings");
 
-    flexi_logger::Logger::with_str(&settings.log_level)
-        .log_target(LogTarget::File)
-        .directory("logs")
-        .create_symlink("current_run.log")
-        .rotate(
-            Criterion::Age(Age::Day),
-            Naming::Timestamps,
-            Cleanup::KeepLogFiles(14)
-        )
-        .buffer_and_flush()
-        .duplicate_to_stderr(Duplicate::Warn)
-        .format_for_stderr(log_format_colored)
-        .format_for_files(log_format)
-        .start()
-        .unwrap();
-
+    // Setup logging
+    setup_logging(&settings);
     debug!("Settings and Logger initialized");
 
     // Setup Database
@@ -104,8 +61,8 @@ async fn main() -> std::io::Result<()> {
 
     // Create player daemon
     debug!("Create player and WS hub");
-    let device: cpal::Device = cpal::default_host().default_output_device().unwrap();
-    let (player, _stream) = RodioPlayer::new(device).unwrap();
+    let device: cpal::Device = cpal::default_host().default_output_device().expect("Error getting default audio device");
+    let (player, _stream) = RodioPlayer::new(device).expect("Error creating player");
     let player = web::Data::new(Mutex::new(player));
 
     // Create Actor for Player WebSocket Connection
@@ -170,4 +127,51 @@ async fn main() -> std::io::Result<()> {
         ))?
         .run()
         .await
+}
+
+pub fn setup_logging (settings: &Settings) {
+    flexi_logger::Logger::with_str(&settings.log_level)
+        .log_target(LogTarget::File)
+        .directory("logs")
+        .create_symlink("current_run.log")
+        .rotate(
+            Criterion::Age(Age::Day),
+            Naming::Timestamps,
+            Cleanup::KeepLogFiles(14)
+        )
+        .buffer_and_flush()
+        .duplicate_to_stderr(Duplicate::Warn)
+        .format_for_stderr(log_format_colored)
+        .format_for_files(log_format)
+        .start()
+        .expect("Error creating logger");
+}
+
+pub fn log_format_colored(
+    w: &mut dyn std::io::Write,
+    now: &mut DeferredNow,
+    record: &Record,
+) -> Result<(), std::io::Error> {
+    let level = record.level();
+    write!(
+        w,
+        "{} [{}]: {}",
+        style(level, now.now().format("%Y-%m-%d %H:%M:%S")),
+        style(level, record.level()),
+        style(level, &record.args())
+    )
+}
+
+pub fn log_format(
+    w: &mut dyn std::io::Write,
+    now: &mut DeferredNow,
+    record: &Record,
+) -> Result<(), std::io::Error> {
+    write!(
+        w,
+        "{} [{}]: {}",
+        now.now().format("%Y-%m-%d %H:%M:%S"),
+        record.level(),
+        &record.args()
+    )
 }

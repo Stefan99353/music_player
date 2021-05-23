@@ -1,5 +1,5 @@
 [package]
-name = "music-daemon"
+name = "music_player"
 version = "0.1.0"
 authors = ["Stefan Rupertsberger <s.rupertsberger@gmail.com>"]
 edition = "2018"

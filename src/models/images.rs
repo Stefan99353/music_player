@@ -24,7 +24,7 @@ impl Image {
             .optional()
     }
 
-    pub fn find(image_path: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+    pub fn find(image_path: &str, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
         use crate::schema::images::dsl::*;
 
         images

@@ -27,7 +27,7 @@ impl Playlist {
             .optional()
     }
 
-    pub fn find(playlist_name: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+    pub fn find(playlist_name: &str, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
         use crate::schema::playlists::dsl::*;
 
         playlists

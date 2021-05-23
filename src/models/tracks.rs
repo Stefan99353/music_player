@@ -39,7 +39,7 @@ impl Track {
             .optional()
     }
 
-    pub fn find(track_title: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+    pub fn find(track_title: &str, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
         use crate::schema::tracks::dsl::*;
 
         tracks
@@ -141,7 +141,7 @@ impl PopulatedTrack {
             .optional()
     }
 
-    pub fn find(track_title: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+    pub fn find(track_title: &str, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
         use crate::schema::populated_tracks::dsl::*;
 
         populated_tracks

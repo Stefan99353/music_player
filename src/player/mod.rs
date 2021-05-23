@@ -163,7 +163,7 @@ impl RodioPlayer {
 
     pub fn prev(&mut self) -> anyhow::Result<()> {
         debug!("Skip previous");
-        if self.prev_tracks.len() < 1 {
+        if self.prev_tracks.is_empty() {
             return Err(Error::msg("No previous tracks available"));
         }
 

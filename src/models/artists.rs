@@ -26,7 +26,7 @@ impl Artist {
             .optional()
     }
 
-    pub fn find(artist_name: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+    pub fn find(artist_name: &str, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
         use crate::schema::artists::dsl::*;
 
         artists

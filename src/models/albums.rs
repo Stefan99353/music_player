@@ -30,7 +30,7 @@ impl Album {
             .optional()
     }
 
-    pub fn find(album_title: &String, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
+    pub fn find(album_title: &str, conn: &SqliteConnection) -> diesel::QueryResult<Option<Self>> {
         use crate::schema::albums::dsl::*;
 
         albums
