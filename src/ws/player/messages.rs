@@ -23,9 +23,11 @@ pub struct Disconnect {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum RodioCommand {
     Resume,
     Pause,
+    Shuffle(bool),
     Stop,
     Next,
     Prev,

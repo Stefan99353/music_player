@@ -7,7 +7,6 @@ use std::time::Duration;
 use actix::Addr;
 use anyhow::Error;
 use chrono::Utc;
-use rand::seq::SliceRandom;
 use rodio::{PlayError, Source};
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +19,8 @@ use crate::ws::player::messages::{RodioCommand, RodioCommandMessage};
 pub struct RodioPlayerState {
     pub current_track: Option<PopulatedTrack>,
     pub paused: bool,
+    pub shuffle: bool,
+    pub repeat: Repeat,
     pub volume: f32,
     pub time: u128,
 }
@@ -33,9 +34,20 @@ pub struct RodioPlayer {
     next_tracks: VecDeque<PopulatedTrack>,
     seek_to: Option<Duration>,
     paused: bool,
+    shuffle: bool,
+    // TODO: Implement repeating
+    repeat: Repeat,
     volume: f32,
     current_started_at: Option<u128>,
     current_paused_at: Option<Duration>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Repeat {
+    Not,
+    Single,
+    Endless,
 }
 
 #[allow(dead_code)]
@@ -55,6 +67,8 @@ impl RodioPlayer {
                 next_tracks: VecDeque::new(),
                 seek_to: None,
                 paused: false,
+                shuffle: false,
+                repeat: Repeat::Not,
                 volume: 0.5,
                 current_started_at: None,
                 current_paused_at: None,
@@ -79,14 +93,8 @@ impl RodioPlayer {
         self.next_tracks.push_back(track);
     }
 
-    pub fn add_tracks(&mut self, tracks: Vec<PopulatedTrack>, shuffle: bool) {
+    pub fn add_tracks(&mut self, tracks: Vec<PopulatedTrack>) {
         debug!("Adding {} tracks", tracks.len());
-        let mut tracks = tracks;
-
-        if shuffle {
-            let mut rng = rand::thread_rng();
-            tracks.shuffle(&mut rng);
-        }
 
         self.next_tracks.extend(tracks.into_iter());
     }
@@ -127,6 +135,12 @@ impl RodioPlayer {
         }
     }
 
+    pub fn shuffle(&mut self, shuffle: bool) {
+        debug!("Set shuffle: '{}'", shuffle);
+        self.shuffle = shuffle;
+        self.ping_ws();
+    }
+
     pub fn stop(&mut self) -> Result<(), PlayError> {
         debug!("Stop playback");
         self.sink.stop();
@@ -156,8 +170,6 @@ impl RodioPlayer {
             self.sink.pause();
         }
 
-        // self.ping_ws();
-
         Ok(())
     }
 
@@ -180,8 +192,6 @@ impl RodioPlayer {
         if self.paused {
             self.sink.pause();
         }
-
-        // self.ping_ws();
 
         Ok(())
     }
@@ -247,6 +257,8 @@ impl RodioPlayer {
         RodioPlayerState {
             current_track: self.current_track.clone(),
             paused: self.paused,
+            shuffle: self.shuffle,
+            repeat: self.repeat,
             volume: self.volume,
             time,
         }
@@ -285,7 +297,13 @@ impl RodioPlayer {
 fn player_cycle(player: Arc<Mutex<RodioPlayer>>) -> anyhow::Result<bool> {
     let mut player = player.lock().unwrap();
 
-    let track = player.next_tracks.pop_front();
+    let track = match player.shuffle {
+        true => {
+            let index = (rand::random::<f32>() * player.next_tracks.len() as f32).floor() as usize;
+            player.next_tracks.remove(index)
+        }
+        false => { player.next_tracks.pop_front() }
+    };
 
     if let Some(next_track) = track {
         debug!("Found track {}", &next_track.title);

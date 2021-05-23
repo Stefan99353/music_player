@@ -21,8 +21,8 @@ export class AlbumsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.artistId = params.artistId || null;
+    this.route.params.subscribe(value => {
+      this.artistId = !isNaN(parseInt(value.artistId, 10)) ? parseInt(value.artistId, 10) : null;
     });
 
     this.storageService.storageObservable().subscribe(value => {
@@ -45,7 +45,7 @@ export class AlbumsComponent implements OnInit {
     }
   }
 
-  addAlbum(albumId: number, shuffle: boolean): void {
-    this.queueService.addAlbum(albumId, shuffle).subscribe();
+  addAlbum(albumId: number): void {
+    this.queueService.addAlbum(albumId).subscribe();
   }
 }

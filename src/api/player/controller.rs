@@ -32,6 +32,19 @@ pub async fn pause(player: web::Data<PlayerData>) -> Result<HttpResponse, Error>
     Ok(HttpResponse::Ok().finish())
 }
 
+#[post("shuffle")]
+pub async fn shuffle(
+    shuffle: web::Json<Shuffle>,
+    player: web::Data<PlayerData>,
+) -> Result<HttpResponse, Error> {
+    let mut player = player.lock().unwrap();
+    let shuffle = shuffle.shuffle;
+
+    player.shuffle(shuffle);
+
+    Ok(HttpResponse::Ok().finish())
+}
+
 #[post("stop")]
 pub async fn stop(player: web::Data<PlayerData>) -> Result<HttpResponse, Error> {
     let mut player = player.lock().unwrap();
@@ -107,4 +120,9 @@ pub struct Volume {
 #[derive(Deserialize)]
 pub struct SeekTo {
     seek_to: u64,
+}
+
+#[derive(Deserialize)]
+pub struct Shuffle {
+    shuffle: bool,
 }

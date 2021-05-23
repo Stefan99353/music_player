@@ -35,7 +35,7 @@ export class ArtistsComponent implements OnInit {
     }
   }
 
-  addArtist(artistId: number, shuffle: boolean): void {
-    this.queueService.addArtist(artistId, shuffle).subscribe();
+  addArtist(artistId: number): void {
+    this.queueService.addArtist(artistId).subscribe();
   }
 }

@@ -6,7 +6,7 @@ import {QueueComponent} from '../../dialogs/queue/queue.component';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 
 interface RodioCommandMessage {
-  command: 'Resume' | 'Pause' | 'Stop' | 'Next' | 'Prev' | 'State' | { Volume: number } | { Seek: number };
+  command: 'resume' | 'pause' | {shuffle: boolean} | 'stop' | 'next' | 'prev' | 'state' | { volume: number } | { seek: number };
 }
 
 @Component({
@@ -23,6 +23,8 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
   rodioPlayerState: RodioPlayerState = {
     currentTrack: null,
     paused: false,
+    shuffle: false,
+    repeat: 'Not',
     volume: 0.5,
     time: 0,
   };
@@ -83,10 +85,18 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
     }
 
     if (this.rodioPlayerState.paused) {
-      this.wsSubject.next({command: 'Resume'});
+      this.wsSubject.next({command: 'resume'});
     } else {
-      this.wsSubject.next({command: 'Pause'});
+      this.wsSubject.next({command: 'pause'});
     }
+  }
+
+  shuffle(): void {
+    if (this.wsSubject === null) {
+      return;
+    }
+
+    this.wsSubject.next({command: {shuffle: !this.rodioPlayerState.shuffle}});
   }
 
   stop(): void {
@@ -94,7 +104,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.wsSubject.next({command: 'Stop'});
+    this.wsSubject.next({command: 'stop'});
   }
 
   prev(): void {
@@ -102,7 +112,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.wsSubject.next({command: 'Prev'});
+    this.wsSubject.next({command: 'prev'});
   }
 
   next(): void {
@@ -110,7 +120,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.wsSubject.next({command: 'Next'});
+    this.wsSubject.next({command: 'next'});
   }
 
   setVolume(volume: number | null): void {
@@ -119,7 +129,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
     }
 
     if (volume !== null) {
-      this.wsSubject.next({command: {Volume: volume}});
+      this.wsSubject.next({command: {volume}});
     }
   }
 
@@ -146,7 +156,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
 
   seek_to(to: number | null): void {
     if (to !== null && this.wsSubject !== null) {
-      this.wsSubject.next({command: {Seek: to}});
+      this.wsSubject.next({command: {seek: to}});
     }
   }
 }

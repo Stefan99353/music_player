@@ -18,7 +18,6 @@ export class AlbumListComponent implements OnInit {
 
   @Output() albumClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() addAlbum: EventEmitter<number> = new EventEmitter<number>();
-  @Output() shuffleAlbum: EventEmitter<number> = new EventEmitter<number>();
   @Input() displayAsGrid = true;
 
   constructor(
@@ -30,7 +29,7 @@ export class AlbumListComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.artistId = params.artistId;
+      this.artistId = !isNaN(parseInt(params.artistId, 10)) ? parseInt(params.artistId, 10) : null;
 
       const filter: RequestFilter = {
         filter: null, limit: null, order: null, page: null, sort: null

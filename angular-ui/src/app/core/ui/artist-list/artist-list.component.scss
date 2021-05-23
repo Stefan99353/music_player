@@ -21,15 +21,11 @@
       }
     }
 
-    .button-add, .button-shuffle {
+    .button-add {
       display: none;
       position: absolute;
       bottom: 4rem;
       right: 1.5rem;
-    }
-
-    .button-shuffle {
-      bottom: 7rem;
     }
   }
 
@@ -91,7 +87,7 @@
     &:hover {
       box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
-      .button-add, .button-shuffle {
+      .button-add {
         display: block;
       }
     }
@@ -100,11 +96,8 @@
       flex: 1 1 auto;
     }
 
-    .button-add, .button-shuffle {
-      display: none;
-    }
-
     .button-add {
+      display: none;
       margin-right: 1rem;
     }
   }

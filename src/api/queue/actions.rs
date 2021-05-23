@@ -9,7 +9,6 @@ pub fn add_to_queue(
     conn: &SqliteConnection,
     player: Arc<Mutex<RodioPlayer>>,
     ids: Vec<i32>,
-    shuffle: bool,
 ) -> anyhow::Result<()> {
     use crate::schema::populated_tracks::dsl::*;
 
@@ -19,7 +18,7 @@ pub fn add_to_queue(
 
     let mut player = player.lock().unwrap();
 
-    player.add_tracks(tracks_to_add, shuffle);
+    player.add_tracks(tracks_to_add);
 
     Ok(())
 }
@@ -28,7 +27,6 @@ pub fn add_artist_to_queue(
     conn: &SqliteConnection,
     player: Arc<Mutex<RodioPlayer>>,
     artist_id: i32,
-    shuffle: bool,
 ) -> anyhow::Result<()> {
     use crate::schema::{populated_tracks, artists};
 
@@ -41,7 +39,7 @@ pub fn add_artist_to_queue(
 
     let mut player = player.lock().unwrap();
 
-    player.add_tracks(tracks_to_add, shuffle);
+    player.add_tracks(tracks_to_add);
 
     Ok(())
 }
@@ -50,7 +48,6 @@ pub fn add_album_to_queue(
     conn: &SqliteConnection,
     player: Arc<Mutex<RodioPlayer>>,
     album_id: i32,
-    shuffle: bool,
 ) -> anyhow::Result<()> {
     use crate::schema::{populated_tracks, albums};
 
@@ -63,7 +60,7 @@ pub fn add_album_to_queue(
 
     let mut player = player.lock().unwrap();
 
-    player.add_tracks(tracks_to_add, shuffle);
+    player.add_tracks(tracks_to_add);
 
     Ok(())
 }

@@ -14,10 +14,6 @@
       <mat-icon>add</mat-icon>
     </button>
 
-    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleAlbum.emit(album.id)">
-      <mat-icon>shuffle</mat-icon>
-    </button>
-
     <div *ngIf="!album.imageId" class="album-image image-placeholder">
       <p>{{album.title.substr(0, 1)}}</p>
     </div>
@@ -46,9 +42,6 @@
 
     <button class="button-add" mat-mini-fab color="primary" (click)="$event.stopPropagation(); addAlbum.emit(album.id)">
       <mat-icon>add</mat-icon>
-    </button>
-    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleAlbum.emit(album.id)">
-      <mat-icon>shuffle</mat-icon>
     </button>
   </mat-card>
 

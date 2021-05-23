@@ -78,6 +78,9 @@ impl Handler<RodioCommandMessage> for WsPlayerHub {
             RodioCommand::Pause => {
                 player.pause();
             }
+            RodioCommand::Shuffle(shuffle) => {
+                player.shuffle(shuffle);
+            }
             RodioCommand::Stop => {
                 let _ = player.stop();
             }

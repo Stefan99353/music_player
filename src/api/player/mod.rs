@@ -7,6 +7,7 @@ pub fn register(scope: Scope) -> Scope {
         .service(controller::state)
         .service(controller::resume)
         .service(controller::pause)
+        .service(controller::shuffle)
         .service(controller::stop)
         .service(controller::next)
         .service(controller::prev)

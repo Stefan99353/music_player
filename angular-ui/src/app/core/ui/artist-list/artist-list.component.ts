@@ -14,7 +14,6 @@ export class ArtistListComponent implements OnInit {
 
   @Output() artistClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() addArtist: EventEmitter<number> = new EventEmitter<number>();
-  @Output() shuffleArtist: EventEmitter<number> = new EventEmitter<number>();
   @Input() displayAsGrid = false;
 
   constructor(private artistService: ArtistService) {

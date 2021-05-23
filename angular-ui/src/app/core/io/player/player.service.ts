@@ -25,6 +25,10 @@ export class PlayerService {
     return this.http.post<void>(this.baseUrl + '/pause', undefined);
   }
 
+  shuffle(shuffle: boolean): Observable<void> {
+    return this.http.post<void>(this.baseUrl + '/shuffle', undefined);
+  }
+
   stop(): Observable<void> {
     return this.http.post<void>(this.baseUrl + '/stop', undefined);
   }

@@ -1,7 +1,6 @@
 <div class="artist-list">
   <app-artist-list (artistClicked)="artistClicked($event)"
-                   (addArtist)="addArtist($event, false)"
-                   (shuffleArtist)="addArtist($event, true)"
+                   (addArtist)="addArtist($event)"
                    [displayAsGrid]="grid"
   ></app-artist-list>
 </div>

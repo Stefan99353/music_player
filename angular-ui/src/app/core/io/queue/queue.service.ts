@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {Observable} from 'rxjs';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Track} from '../../../models/track';
-import {PaginationResult} from '../../../models/pagination-result';
 
 @Injectable({
   providedIn: 'root'
@@ -18,25 +17,16 @@ export class QueueService {
     return this.http.get<Track[]>(this.baseUrl);
   }
 
-  addTracks(ids: number[], shuffle: boolean = false): Observable<void> {
-    const params = new HttpParams()
-      .set('shuffle', shuffle.toString());
-
-    return this.http.post<void>(this.baseUrl + '/add', ids, {params});
+  addTracks(ids: number[]): Observable<void> {
+    return this.http.post<void>(this.baseUrl + '/add', ids);
   }
 
-  addAlbum(id: number, shuffle: boolean = false): Observable<void> {
-    const params = new HttpParams()
-      .set('shuffle', shuffle.toString());
-
-    return this.http.post<void>(this.baseUrl + '/add/album', id, {params});
+  addAlbum(id: number): Observable<void> {
+    return this.http.post<void>(this.baseUrl + '/add/album', id);
   }
 
-  addArtist(id: number, shuffle: boolean = false): Observable<void> {
-    const params = new HttpParams()
-      .set('shuffle', shuffle.toString());
-
-    return this.http.post<void>(this.baseUrl + '/add/artist', id, {params});
+  addArtist(id: number): Observable<void> {
+    return this.http.post<void>(this.baseUrl + '/add/artist', id);
   }
 
   clear(): Observable<void> {

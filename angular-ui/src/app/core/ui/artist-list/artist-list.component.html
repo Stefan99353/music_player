@@ -14,10 +14,6 @@
       <mat-icon>add</mat-icon>
     </button>
 
-    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleArtist.emit(artist.id)">
-      <mat-icon>shuffle</mat-icon>
-    </button>
-
     <div *ngIf="!artist.imageId" class="artist-image image-placeholder">
       <p>{{artist.name.substr(0, 1)}}</p>
     </div>
@@ -46,9 +42,6 @@
 
     <button class="button-add" mat-mini-fab color="primary" (click)="$event.stopPropagation(); addArtist.emit(artist.id)">
       <mat-icon>add</mat-icon>
-    </button>
-    <button class="button-shuffle" mat-mini-fab color="primary" (click)="$event.stopPropagation(); shuffleArtist.emit(artist.id)">
-      <mat-icon>shuffle</mat-icon>
     </button>
   </mat-card>
 

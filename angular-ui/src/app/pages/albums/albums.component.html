@@ -1,7 +1,6 @@
 <div class="album-list">
   <app-album-list (albumClicked)="albumClicked($event)"
-                  (addAlbum)="addAlbum($event, false)"
-                  (shuffleAlbum)="addAlbum($event, true)"
+                  (addAlbum)="addAlbum($event)"
                   [displayAsGrid]="grid"
   ></app-album-list>
 </div>
