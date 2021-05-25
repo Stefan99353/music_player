@@ -1,5 +1,6 @@
 <mat-toolbar class="player-toolbar">
 
+  <!--Track Info-->
   <div class="track-info">
     <img *ngIf="rodioPlayerState.currentTrack && imageId"
          class="track-image"
@@ -20,39 +21,79 @@
     </div>
   </div>
 
-  <div class="controls">
-    <button mat-icon-button (click)="prev()">
-      <mat-icon>skip_previous</mat-icon>
-    </button>
+  <!--Track Controls-->
+  <div class="track-controls">
+    <div class="controls">
+      <!--Shuffle-->
+      <button mat-icon-button class="control-small" (click)="shuffle()">
+        <mat-icon *ngIf="!rodioPlayerState.shuffle">shuffle</mat-icon>
+        <mat-icon *ngIf="rodioPlayerState.shuffle">shuffle_on</mat-icon>
+      </button>
 
-    <button mat-icon-button (click)="resumePause()">
-      <mat-icon *ngIf="rodioPlayerState?.paused">play_circle</mat-icon>
-      <mat-icon *ngIf="!rodioPlayerState?.paused">pause_circle</mat-icon>
-    </button>
+      <!--Prev-->
+      <button mat-icon-button class="control-med" (click)="prev()">
+        <mat-icon>skip_previous</mat-icon>
+      </button>
 
-    <button mat-icon-button (click)="next()">
-      <mat-icon>skip_next</mat-icon>
-    </button>
+      <!--Pause-->
+      <button mat-mini-fab color="primary" class="control-big" (click)="resumePause()">
+        <mat-icon *ngIf="rodioPlayerState.paused">play_arrow</mat-icon>
+        <mat-icon *ngIf="!rodioPlayerState.paused">pause</mat-icon>
+      </button>
+
+      <!--Next-->
+      <button mat-icon-button class="control-med" (click)="next()">
+        <mat-icon>skip_next</mat-icon>
+      </button>
+
+      <!--Repeat-->
+      <button mat-icon-button class="control-small" (click)="repeat()">
+        <mat-icon *ngIf="rodioPlayerState.repeat === 'not'">repeat</mat-icon>
+        <mat-icon *ngIf="rodioPlayerState.repeat === 'single'">repeat_one_on</mat-icon>
+        <mat-icon *ngIf="rodioPlayerState.repeat === 'endless'">repeat_on</mat-icon>
+      </button>
+    </div>
+
+    <div class="progress">
+      <span class="time time-current">{{rodioPlayerState.time | duration}}</span>
+      <mat-slider color="primary"
+                  thumbLabel
+                  [displayWith]="progressThumbLabel"
+                  step="1000"
+                  min="0"
+                  [max]="rodioPlayerState.currentTrack?.duration"
+                  [value]="rodioPlayerState.time"
+                  (valueChange)="seek_to($event)"
+      ></mat-slider>
+      <span
+        class="time time-total">{{(rodioPlayerState.currentTrack ? rodioPlayerState.currentTrack.duration : 0) | duration}}</span>
+    </div>
   </div>
 
-  <mat-slider class="progress"
-              color="primary"
-              thumbLabel
-              [displayWith]="progressThumbLabel"
-              step="1000"
-              min="0"
-              [max]="rodioPlayerState.currentTrack?.duration"
-              [value]="rodioPlayerState.time"
-              (valueChange)="seek_to($event)"
-  ></mat-slider>
+  <!--Player Controls-->
+  <div class="player-controls">
+    <!--Queue-->
+    <button mat-icon-button class="queue-button" (click)="openQueue()">
+      <mat-icon>queue_music</mat-icon>
+    </button>
 
-  <div class="misc">
-    <div class="volume-container">
-      <mat-icon *ngIf="rodioPlayerState?.volume" class="volume-icon"
-                (click)="toggleVolume()">volume_up
+    <!--Volume-->
+    <div class="volume">
+      <mat-icon class="volume-icon"
+                *ngIf="rodioPlayerState.volume === 0"
+                (click)="toggleVolume()"> volume_off
       </mat-icon>
-      <mat-icon *ngIf="!rodioPlayerState?.volume" class="volume-icon" (click)="toggleVolume()">
-        volume_off
+      <mat-icon class="volume-icon"
+                *ngIf="rodioPlayerState.volume > 0 && rodioPlayerState.volume <= 0.33"
+                (click)="toggleVolume()"> volume_mute
+      </mat-icon>
+      <mat-icon class="volume-icon"
+                *ngIf="rodioPlayerState.volume > 0.33 && rodioPlayerState.volume <= 0.66"
+                (click)="toggleVolume()"> volume_down
+      </mat-icon>
+      <mat-icon class="volume-icon"
+                *ngIf="rodioPlayerState.volume > 0.66"
+                (click)="toggleVolume()"> volume_up
       </mat-icon>
 
       <mat-slider class="volume"
@@ -63,12 +104,59 @@
                   [value]="rodioPlayerState?.volume"
                   (valueChange)="setVolume($event)"
       ></mat-slider>
-
     </div>
-
-    <button mat-icon-button class="queue-button" (click)="openQueue()">
-      <mat-icon>queue_music</mat-icon>
-    </button>
   </div>
+
+
+  <!--  <div class="controls">-->
+  <!--    <button mat-icon-button (click)="prev()">-->
+  <!--      <mat-icon>skip_previous</mat-icon>-->
+  <!--    </button>-->
+
+  <!--    <button mat-icon-button (click)="resumePause()">-->
+  <!--      <mat-icon *ngIf="rodioPlayerState?.paused">play_circle</mat-icon>-->
+  <!--      <mat-icon *ngIf="!rodioPlayerState?.paused">pause_circle</mat-icon>-->
+  <!--    </button>-->
+
+  <!--    <button mat-icon-button (click)="next()">-->
+  <!--      <mat-icon>skip_next</mat-icon>-->
+  <!--    </button>-->
+  <!--  </div>-->
+
+  <!--  <mat-slider class="progress"-->
+  <!--              color="primary"-->
+  <!--              thumbLabel-->
+  <!--              [displayWith]="progressThumbLabel"-->
+  <!--              step="1000"-->
+  <!--              min="0"-->
+  <!--              [max]="rodioPlayerState.currentTrack?.duration"-->
+  <!--              [value]="rodioPlayerState.time"-->
+  <!--              (valueChange)="seek_to($event)"-->
+  <!--  ></mat-slider>-->
+
+  <!--  <div class="misc">-->
+  <!--    <div class="volume-container">-->
+  <!--      <mat-icon *ngIf="rodioPlayerState?.volume" class="volume-icon"-->
+  <!--                (click)="toggleVolume()">volume_up-->
+  <!--      </mat-icon>-->
+  <!--      <mat-icon *ngIf="!rodioPlayerState?.volume" class="volume-icon" (click)="toggleVolume()">-->
+  <!--        volume_off-->
+  <!--      </mat-icon>-->
+
+  <!--      <mat-slider class="volume"-->
+  <!--                  color="primary"-->
+  <!--                  min="0"-->
+  <!--                  max="1"-->
+  <!--                  step="0.05"-->
+  <!--                  [value]="rodioPlayerState?.volume"-->
+  <!--                  (valueChange)="setVolume($event)"-->
+  <!--      ></mat-slider>-->
+
+  <!--    </div>-->
+
+  <!--    <button mat-icon-button class="queue-button" (click)="openQueue()">-->
+  <!--      <mat-icon>queue_music</mat-icon>-->
+  <!--    </button>-->
+  <!--  </div>-->
 
 </mat-toolbar>

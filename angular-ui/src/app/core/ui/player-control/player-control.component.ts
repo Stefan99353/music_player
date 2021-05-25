@@ -24,7 +24,7 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
     currentTrack: null,
     paused: false,
     shuffle: false,
-    repeat: 'Not',
+    repeat: 'not',
     volume: 0.5,
     time: 0,
   };
@@ -158,5 +158,9 @@ export class PlayerControlComponent implements OnInit, OnDestroy {
     if (to !== null && this.wsSubject !== null) {
       this.wsSubject.next({command: {seek: to}});
     }
+  }
+
+  repeat(): void {
+    // TODO: Implement repeat
   }
 }

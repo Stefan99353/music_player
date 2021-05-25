@@ -14,15 +14,16 @@ export class DurationPipe implements PipeTransform {
 
     let result = '';
 
+    // Hours
     if (hours > 0) {
       result += hours + ':';
+      if (minutes < 10) {
+        result += '0';
+      }
     }
 
-    if (minutes >= 10) {
-      result += minutes + ':';
-    } else {
-      result += '0' + minutes + ':';
-    }
+    // Minutes
+    result += minutes + ':';
 
     if (seconds >= 10) {
       result += seconds;

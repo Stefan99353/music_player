@@ -1,33 +1,28 @@
-.player-toolbar {
-  height: 96px;
+$controls-height: 112px;
 
-  @media only screen and (max-width: 800px) {
-    justify-content: space-between;
-  }
+.player-toolbar {
+  height: $controls-height;
+  display: flex;
+  justify-content: space-between;
 
   .track-info {
+    width: 30vw;
+    max-width: 30vw;
     display: flex;
+    justify-content: flex-start;
 
     .track-image {
-      height: calc(96px - 2rem);
-      width: calc(96px - 2rem);
-
-      object-fit: cover;
-
-      background-color: #303030;
-      border-radius: 2px;
-
       display: flex;
       justify-content: center;
       align-items: center;
-
+      height: calc(#{$controls-height} - 2rem);
+      width: calc(#{$controls-height} - 2rem);
+      object-fit: cover;
+      background-color: #303030;
+      border-radius: 2px;
       font-size: 1rem;
       font-weight: bold;
       color: lightgray;
-
-      @media only screen and (max-width: 610px) {
-        display: none;
-      }
 
       p {
         margin: 0;
@@ -35,13 +30,14 @@
     }
 
     .track-desc {
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      width: 150px;
       margin-left: 1rem;
 
       p {
+        width: calc(30vw - #{$controls-height});
         margin: 0;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -60,30 +56,67 @@
     }
   }
 
-  .progress {
-    flex: 1 1 auto;
-
-    @media only screen and (max-width: 800px) {
-      display: none;
-    }
-  }
-
-  .misc {
+  .track-controls {
+    width: 40vw;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
 
-    .volume-container {
+    .controls {
+      color: darkgray;
       display: flex;
-      flex-direction: row;
+      justify-content: center;
+
+      .control-small mat-icon {
+        font-size: 1.2rem;
+      }
+
+      button {
+        margin: 0 0.25rem;
+      }
+    }
+
+    .progress {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
 
-      .volume-icon {
-        cursor: pointer;
+      .time {
+        font-size: medium;
+        font-weight: lighter;
+
+        &.time-current {
+          margin-right: 0.5rem;
+        }
+
+        &.time-total {
+          margin-left: 0.5rem;
+        }
+      }
+
+      mat-slider {
+        flex: 1 0 auto;
       }
     }
   }
 
-  .controls, .progress, .misc{
-    margin-left: 1rem;
+  .player-controls {
+    width: 30vw;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .queue-button {
+      margin-right: 0.5rem;
+    }
+
+    .volume {
+      display: flex;
+      align-items: center;
+
+      .volume-icon {
+        margin-right: 0.25rem;
+      }
+    }
   }
 }
